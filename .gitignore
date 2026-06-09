@@ -1,0 +1,81 @@
+# 数据集（读者自行下载准备，不纳入版本控制）
+data/*
+!data/README.md
+
+# 输出
+output/
+
+# 环境变量
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.log
+*.tmp
+*.swp
+
+# 个人 AI 协作入口（本地保留不提交）
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+# 设计草稿（内部协作空间，不纳入项目）
+/design-draft/
+
+# 个人 AI 交互配置（不纳入项目）
+/.claude/
+/.codex/
+/.codex-runs/
+/.kimi/
+/.kimi-code/
+/.gemini/
+/.opencode/
+/.qwen/
+/.playwright/
+/.playwright-cli/
+/.playwright-mcp/
+/.agent/
+/.memo/
+/.entire
+/.temp/
+/.acp_agent/
+
+# 个人运行时产物（.agents 子目录中仅排除运行时内容，skills 和 MEMORY.md 是项目共享的）
+/.agents/context/
+/.agents/task-sessions/active/
+/.agents/task-sessions/paused/
+/.agents/task-sessions/archive/
+/.agents/task-sessions/completed/
+/.agents/task-sessions/handoffs/
+/.agents/mcp.local.json
+/.agents/skill-development/
+/.agents/**/.git/
+
+# 编辑器临时文件
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+
+# Python 工具缓存
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/

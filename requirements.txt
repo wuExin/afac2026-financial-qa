@@ -1,0 +1,14 @@
+# Baseline 运行必需（src/ 下的代码直接依赖）
+
+openai>=1.30.0      # LLM API 调用（兼容百炼平台 DashScope）
+pyyaml>=6.0         # config.yaml 配置加载
+
+# 预处理阶段需要（生成 processed_pymupdf4llm/ 数据）
+# 如果你已经下载了解析后的数据，可以跳过安装
+pymupdf4llm>=0.0.17  # PDF 转 Markdown
+
+# 可选：若通过 .env 文件管理 API Key
+# python-dotenv>=1.0.0
+
+# 以下依赖仅在 design-draft/ 实验代码中使用，baseline 运行不需要：
+# tiktoken, numpy, pandas, faiss-cpu, sentence-transformers, tqdm, jupyter

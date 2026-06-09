@@ -1,0 +1,14 @@
+model:
+  name: "qwen-plus"
+  api_base: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  temperature: 0.0
+  enable_thinking: false
+
+agent:
+  max_steps: 12
+
+paths:
+  data_dir: "data"
+  output_dir: "output/advance"
+  raw_dataset: "data/raw_dataset"
+  processed_docs: "data/processed_pymupdf4llm"

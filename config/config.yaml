@@ -1,0 +1,59 @@
+# AFAC2026 赛道四 项目配置
+
+# 模型配置（阿里云百炼 Qwen 系列）
+model:
+  name: "qwen-plus"
+  api_base: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  max_tokens: 4096
+  temperature: 0.0
+  max_context_tokens: 80000  # 上下文截断上限（字符数估算）
+
+# 数据路径
+data:
+  dataset_dir: "data/raw_dataset"
+  raw_dir: "data/raw_dataset/raw"
+  questions_dir: "data/raw_dataset/questions/group_a"
+  processed_pymupdf4llm_dir: "data/processed_pymupdf4llm"
+  output_dir: "output"
+
+# 检索配置
+retrieval:
+  embedding_model: "text-embedding-v3"
+  top_k: 10
+  chunk_size: 512
+  chunk_overlap: 128
+  hybrid_search: true
+  keyword_weight: 0.3
+  vector_weight: 0.7
+
+# Agent 配置
+agent:
+  max_rounds: 1  # baseline 先单轮
+  memory_compression: false  # baseline 先不压缩
+  compression_threshold: 100000
+
+# 评测配置
+evaluation:
+  token_budget: 5000000
+  answer_format:
+    mcq: "single"
+    multi: "sorted"
+    tf: "single"
+
+# 领域配置
+domains:
+  insurance:
+    name: "保险条款"
+    doc_count: 16
+  regulatory:
+    name: "监管法规"
+    doc_count: 26
+  financial_contracts:
+    name: "金融合同"
+    doc_count: 14
+  financial_reports:
+    name: "财务报表"
+    doc_count: 10
+  research:
+    name: "行业研报"
+    doc_count: 20
