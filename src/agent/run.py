@@ -93,6 +93,18 @@ def main():
     agent = FinancialQAAgent(config)
     results = {}
 
+    output_dir = Path(config["data"]["output_dir"])
+    output_dir.mkdir(parents=True, exist_ok=True)
+    suffix = f"_{args.tag}" if args.tag else ""
+    output_path = Path(args.output) if args.output else output_dir / f"results_{args.split.lower()}{suffix}.json"
+    csv_path = output_dir / f"submission_{args.split.lower()}{suffix}.csv"
+    diagnostics_path = output_dir / f"diagnostics_{args.split.lower()}{suffix}.csv"
+
+    def save_partial():
+        save_json(results, output_path)
+        generate_csv(results, csv_path)
+        generate_diagnostics_csv(results, diagnostics_path)
+
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         future_to_qid = {
             executor.submit(process_one, agent, q, i, len(questions)): q["qid"]
@@ -101,6 +113,7 @@ def main():
         for future in as_completed(future_to_qid):
             result = future.result()
             results[result["qid"]] = result
+            save_partial()
 
     # 随机填充未处理的题目
     if args.limit is not None and args.limit < len(all_questions):
@@ -126,6 +139,7 @@ def main():
                 "total_tokens": 0,
                 "random_fill": True,
             }
+        save_partial()
 
     # 统计
     total_prompt = sum(r.get("prompt_tokens", 0) for r in results.values())
@@ -138,21 +152,14 @@ def main():
         f"total={total_tokens}"
     )
 
-    # 保存结果
-    output_dir = Path(config["data"]["output_dir"])
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    suffix = f"_{args.tag}" if args.tag else ""
-    output_path = Path(args.output) if args.output else output_dir / f"results_{args.split.lower()}{suffix}.json"
+    # 保存最终结果
     save_json(results, output_path)
     logger.info(f"结果已保存: {output_path}")
 
     # 同时生成 CSV（提交格式）
-    csv_path = output_dir / f"submission_{args.split.lower()}{suffix}.csv"
     generate_csv(results, csv_path)
     logger.info(f"提交 CSV 已保存: {csv_path}")
 
-    diagnostics_path = output_dir / f"diagnostics_{args.split.lower()}{suffix}.csv"
     generate_diagnostics_csv(results, diagnostics_path)
     logger.info(f"诊断 CSV 已保存: {diagnostics_path}")
 

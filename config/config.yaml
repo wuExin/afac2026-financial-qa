@@ -4,6 +4,7 @@
 model:
   name: "qwen-plus"
   api_base: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  fallback_name: ""  # 默认禁用 fallback，避免测试模型和提交模型混用
   max_tokens: 4096
   temperature: 0.0
   max_context_tokens: 80000  # 上下文截断上限（字符数估算）
@@ -13,7 +14,7 @@ data:
   dataset_dir: "data/raw_dataset"
   raw_dir: "data/raw_dataset/raw"
   questions_dir: "data/raw_dataset/questions/group_a"
-  processed_pymupdf4llm_dir: "data/processed_pymupdf4llm"
+  processed_pymupdf4llm_dir: "data/merged_md"
   output_dir: "output"
 
 # 检索配置

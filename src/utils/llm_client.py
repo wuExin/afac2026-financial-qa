@@ -1,18 +1,15 @@
 """
-LLM 客户端封装 — 双渠道调用设计
+LLM 客户端封装 — OpenAI 兼容接口调用设计
 
-主渠道：qwen-plus（性价比最优，文档分析能力强）
-回退渠道：qwen-turbo（同一平台内的轻量模型，作为内部回退）
+主渠道：由 MODEL_NAME/API_BASE_URL/API Key 配置决定。
+回退渠道：可选。通过 FALLBACK_MODEL_NAME 或 config.model.fallback_name 显式配置。
 
 触发回退的条件：
 - HTTP 429 rate_limited
 - HTTP 5xx 服务端错误
 - 网络连接错误
 
-设计说明：双渠道结构是一种冗余/容错设计模式。当主模型因限流、服务端异常等原因不可用时，
-自动切换到备用模型继续服务。这种设计在跨服务商场景下价值更大（不同服务商的审查机制、
-限流策略、可用性互相独立），但本次比赛限定使用阿里云百炼，所以回退只是同一平台内不同
-模型之间的切换。保留这个结构是为了展示"回退设计"这一工程思维，方便读者学习。
+正式提交必须切回 Qwen 系列模型；日常实验可使用其它 OpenAI 兼容模型。
 """
 import os
 import time
@@ -50,21 +47,40 @@ class LLMClient:
         base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1",
         model: str = "qwen-plus",
         temperature: float = 0.0,
+        fallback_model: str = "",
     ):
-        api_key = api_key or os.getenv("DASHSCOPE_API_KEY")
+        is_qwen_endpoint = "dashscope.aliyuncs.com" in base_url or model.lower().startswith("qwen")
         if not api_key:
-            raise ValueError("缺少百炼 API Key，请设置 DASHSCOPE_API_KEY 环境变量")
+            if is_qwen_endpoint:
+                api_key = os.getenv("DASHSCOPE_API_KEY")
+            else:
+                api_key = (
+                    os.getenv("LLM_API_KEY")
+                    or os.getenv("GLM_API_KEY")
+                    or os.getenv("DASHSCOPE_API_KEY")
+                )
+        if not api_key and is_qwen_endpoint:
+            raise ValueError("缺少 DashScope API Key，请设置 DASHSCOPE_API_KEY 后再使用 Qwen/DashScope")
+        if not api_key:
+            raise ValueError("缺少 API Key，请设置 LLM_API_KEY、DASHSCOPE_API_KEY 或 GLM_API_KEY")
 
         # 主渠道
         self.router_client = OpenAI(api_key=api_key, base_url=base_url)
         self.router_model = model
 
-        # 回退渠道（同一平台内的轻量模型）
+        # 回退渠道。为空时禁用，避免 GLM 测试时误回退到 Qwen 或反之。
         self.fallback_client = OpenAI(api_key=api_key, base_url=base_url)
-        self.fallback_model = "qwen-turbo"
+        self.fallback_model = fallback_model
 
         self.temperature = temperature
         self.total_usage = TokenUsage()
+
+    @staticmethod
+    def _extra_body_for_model(model: str) -> Optional[dict]:
+        """只给 Qwen 模型传百炼专属参数，避免其它兼容接口报错。"""
+        if model.lower().startswith("qwen"):
+            return {"enable_thinking": False}
+        return None
 
     @staticmethod
     def _should_fallback(error: Exception) -> bool:
@@ -90,8 +106,10 @@ class LLMClient:
             model=self.router_model,
             messages=messages,
             temperature=temperature if temperature is not None else self.temperature,
-            extra_body={"enable_thinking": False},
         )
+        extra_body = self._extra_body_for_model(self.router_model)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
         if max_tokens is not None:
             kwargs["max_tokens"] = max_tokens
         if tools is not None:
@@ -132,6 +150,9 @@ class LLMClient:
             messages=messages,
             temperature=temperature if temperature is not None else self.temperature,
         )
+        extra_body = self._extra_body_for_model(self.fallback_model)
+        if extra_body:
+            kwargs["extra_body"] = extra_body
         if max_tokens is not None:
             kwargs["max_tokens"] = max_tokens
         if tools is not None:
@@ -174,7 +195,7 @@ class LLMClient:
             response.usage.latency_ms = (time.time() - t0) * 1000
             return response
         except Exception as e:
-            if self._should_fallback(e):
+            if self.fallback_model and self._should_fallback(e):
                 response = self._call_fallback(messages, max_tokens, temperature, tools, tool_choice)
                 response.usage.latency_ms = (time.time() - t0) * 1000
                 return response

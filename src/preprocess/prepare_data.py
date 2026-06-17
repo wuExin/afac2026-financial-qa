@@ -24,6 +24,7 @@
 import argparse
 import zipfile
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, TimeoutError as FutureTimeout
 
@@ -108,6 +109,57 @@ def convert_all_pdfs(raw_dir: Path, output_dir: Path, workers: int = 4) -> None:
     print(f"\n转换完成: {ok_count}/{len(pdfs)} 成功, {err_count}/{len(pdfs)} 失败, {timeout_count}/{len(pdfs)} 超时")
 
 
+class _HTMLTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self._parts = []
+
+    def handle_data(self, data: str) -> None:
+        text = data.strip()
+        if text:
+            self._parts.append(text)
+
+    def get_text(self) -> str:
+        return "\n".join(self._parts)
+
+
+def _html_to_text(content: str) -> str:
+    parser = _HTMLTextExtractor()
+    parser.feed(content)
+    return parser.get_text()
+
+
+def convert_text_documents(raw_dir: Path, output_dir: Path) -> None:
+    """Copy TXT/HTML source documents into the processed Markdown layout."""
+    files = sorted(
+        list(raw_dir.rglob("*.txt"))
+        + list(raw_dir.rglob("*.html"))
+        + list(raw_dir.rglob("*.htm"))
+    )
+    if not files:
+        return
+
+    ok_count = 0
+    err_count = 0
+    for path in files:
+        try:
+            domain = path.relative_to(raw_dir).parts[0]
+            doc_id = path.stem
+            content = path.read_text(encoding="utf-8", errors="ignore")
+            if path.suffix.lower() in {".html", ".htm"}:
+                content = _html_to_text(content)
+
+            out_dir = output_dir / domain / doc_id
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / "page_0001.md").write_text(content, encoding="utf-8")
+            ok_count += 1
+        except Exception as e:
+            err_count += 1
+            print(f"[ERR] {path}: {e}", file=sys.stderr)
+
+    print(f"TXT/HTML 转换完成: {ok_count}/{len(files)} 成功, {err_count}/{len(files)} 失败")
+
+
 def main():
     parser = argparse.ArgumentParser(description="数据准备自动化脚本")
     parser.add_argument(
@@ -159,9 +211,11 @@ def main():
         raw_pdf_dir = extract_to / "raw"
         if raw_pdf_dir.exists():
             convert_all_pdfs(raw_pdf_dir, output_dir, workers=args.workers)
+            convert_text_documents(raw_pdf_dir, output_dir)
         else:
             # 有些压缩包的目录结构可能不同，直接搜全部 PDF
             convert_all_pdfs(extract_to, output_dir, workers=args.workers)
+            convert_text_documents(extract_to, output_dir)
 
     print("\n数据准备完成。")
     print(f"  原始数据: {extract_to}")

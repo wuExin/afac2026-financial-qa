@@ -14,6 +14,7 @@ import re
 from collections import Counter, defaultdict
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
+from html.parser import HTMLParser
 from pathlib import Path
 
 from src.utils.llm_client import LLMClient
@@ -47,6 +48,20 @@ class MemoryState:
     key_facts: Dict[str, str] = field(default_factory=dict)
     reasoning_chain: List[str] = field(default_factory=list)
     token_usage: TokenUsage = field(default_factory=TokenUsage)
+
+
+class HTMLTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self._parts: List[str] = []
+
+    def handle_data(self, data: str) -> None:
+        text = data.strip()
+        if text:
+            self._parts.append(text)
+
+    def get_text(self) -> str:
+        return "\n".join(self._parts)
 
 
 class ContextManager:
@@ -759,47 +774,106 @@ class FinancialQAAgent:
         self.memory = MemoryState()
 
         model_cfg = self.config.get("model", {})
+        base_url = os.getenv("API_BASE_URL", model_cfg.get("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1"))
+        model = os.getenv("MODEL_NAME", model_cfg.get("name", "qwen-plus"))
+        is_qwen_endpoint = "dashscope.aliyuncs.com" in base_url or model.lower().startswith("qwen")
+        api_key = (
+            os.getenv("DASHSCOPE_API_KEY")
+            if is_qwen_endpoint
+            else (os.getenv("LLM_API_KEY") or os.getenv("GLM_API_KEY"))
+        )
+        if not api_key and not is_qwen_endpoint:
+            api_key = os.getenv("DASHSCOPE_API_KEY")
         self.llm = LLMClient(
-            api_key=os.getenv("DASHSCOPE_API_KEY"),
-            base_url=os.getenv("API_BASE_URL", model_cfg.get("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1")),
-            model=os.getenv("MODEL_NAME", model_cfg.get("name", "qwen-plus")),
+            api_key=api_key,
+            base_url=base_url,
+            model=model,
             temperature=model_cfg.get("temperature", 0.0),
+            fallback_model=os.getenv("FALLBACK_MODEL_NAME", model_cfg.get("fallback_name", "")),
         )
 
     def _read_document(self, domain: str, doc_id: str) -> str:
         """读取已解析的文档内容，尝试多个数据路径"""
         roots = [
             Path(self.config["data"].get("processed_pymupdf4llm_dir", "data/processed_pymupdf4llm")),
+            Path("data/merged_md"),
             Path("design-draft/data/processed_pymupdf4llm"),
             Path("data/processed_pymupdf4llm"),
         ]
 
         for root in roots:
             parsed_dir = root / domain / str(doc_id)
-            if parsed_dir.exists():
-                pages = sorted(parsed_dir.glob("page_*.md"))
-                texts = []
-                for page in pages:
-                    try:
-                        texts.append(page.read_text(encoding="utf-8"))
-                    except Exception:
-                        continue
-                return "\n\n".join(texts)
+            if parsed_dir.is_dir():
+                content = self._read_document_dir(parsed_dir)
+                if content:
+                    return content
+
+            direct_file = self._find_document_file(root / domain, str(doc_id))
+            if direct_file:
+                return self._read_document_file(direct_file)
 
             domain_dir = root / domain
             if domain_dir.exists():
                 for child in domain_dir.iterdir():
-                    if child.name.lstrip("0") == str(doc_id).lstrip("0"):
-                        pages = sorted(child.glob("page_*.md"))
-                        texts = []
-                        for page in pages:
-                            try:
-                                texts.append(page.read_text(encoding="utf-8"))
-                            except Exception:
-                                continue
-                        return "\n\n".join(texts)
+                    if child.is_dir() and child.name.lstrip("0") == str(doc_id).lstrip("0"):
+                        content = self._read_document_dir(child)
+                        if content:
+                            return content
 
         return f"[文档 {doc_id} 未找到]"
+
+    def _read_document_dir(self, doc_dir: Path) -> str:
+        pages = sorted(doc_dir.glob("page_*.md"))
+        if not pages:
+            pages = sorted(
+                path for path in doc_dir.iterdir()
+                if path.is_file() and path.suffix.lower() in {".md", ".txt", ".html", ".htm"}
+            )
+
+        texts = []
+        for page in pages:
+            content = self._read_document_file(page)
+            if content:
+                texts.append(content)
+        return "\n\n".join(texts)
+
+    def _find_document_file(self, domain_dir: Path, doc_id: str) -> Optional[Path]:
+        if not domain_dir.exists():
+            return None
+
+        suffixes = (".md", ".txt", ".html", ".htm")
+        candidates = []
+        for suffix in suffixes:
+            candidates.append(domain_dir / f"{doc_id}{suffix}")
+        if doc_id.isdigit():
+            normalized = str(int(doc_id))
+            for suffix in suffixes:
+                candidates.append(domain_dir / f"{normalized}{suffix}")
+
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate
+
+        normalized_doc_id = doc_id.lstrip("0")
+        for path in domain_dir.rglob("*"):
+            if (
+                path.is_file()
+                and path.suffix.lower() in suffixes
+                and path.stem.lstrip("0") == normalized_doc_id
+            ):
+                return path
+        return None
+
+    def _read_document_file(self, path: Path) -> str:
+        try:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            return ""
+        if path.suffix.lower() in {".html", ".htm"}:
+            parser = HTMLTextExtractor()
+            parser.feed(content)
+            return parser.get_text()
+        return content
 
     def _load_evidence(self, question: Dict) -> List[Evidence]:
         """加载题目指定的文档证据（A 组）"""

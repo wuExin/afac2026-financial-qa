@@ -39,15 +39,20 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def process_pdf(pdf_path: Path, output_dir: Path) -> dict:
     """处理单个 PDF，按页输出 Markdown。"""
-    import pymupdf4llm
-
-    domain = pdf_path.parent.name
+    parts = pdf_path.parts
+    if "raw" in parts:
+        raw_index = parts.index("raw")
+        domain = parts[raw_index + 1] if len(parts) > raw_index + 1 else pdf_path.parent.name
+    else:
+        domain = pdf_path.parent.name
     doc_id = pdf_path.stem
 
     out_dir = output_dir / domain / doc_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
     try:
+        import pymupdf4llm
+
         chunks = pymupdf4llm.to_markdown(str(pdf_path), page_chunks=True)
         for i, chunk in enumerate(chunks):
             page_num = i + 1
@@ -61,12 +66,33 @@ def process_pdf(pdf_path: Path, output_dir: Path) -> dict:
             "status": "ok",
         }
     except Exception as e:
+        primary_error = e
+
+    try:
+        import pymupdf
+
+        doc = pymupdf.open(str(pdf_path))
+        for i, page in enumerate(doc):
+            page_num = i + 1
+            text = page.get_text("text")
+            md_path = out_dir / f"page_{page_num:04d}.md"
+            md_path.write_text(text, encoding="utf-8")
+
+        return {
+            "pdf": str(pdf_path),
+            "pages": len(doc),
+            "output": str(out_dir),
+            "status": "ok",
+            "fallback": "pymupdf",
+            "primary_error": str(primary_error),
+        }
+    except Exception as fallback_error:
         return {
             "pdf": str(pdf_path),
             "pages": 0,
             "output": str(out_dir),
             "status": "error",
-            "error": str(e),
+            "error": f"pymupdf4llm: {primary_error}; pymupdf: {fallback_error}",
         }
 
 
