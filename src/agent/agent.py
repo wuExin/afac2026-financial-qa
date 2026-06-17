@@ -19,6 +19,7 @@ from pathlib import Path
 
 from src.utils.llm_client import LLMClient
 from src.utils.helpers import load_config, normalize_answer, count_tokens
+from src.agent.retrieval_logger import RetrievalLogger
 
 
 @dataclass
@@ -303,6 +304,14 @@ class BM25Retriever:
         self.min_score = float(cfg.get("min_score", 0.1))
         self.max_query_terms = int(cfg.get("max_query_terms", 120))
 
+        # 检索日志（默认开；失败静默不影响主流程）
+        log_cfg = (cfg.get("logging") or {})
+        self.log_retrieval = bool(log_cfg.get("log_retrieval", True))
+        self.retrieval_logger = RetrievalLogger(
+            log_dir=log_cfg.get("retrieval_log_dir", "logs"),
+            enabled=self.log_retrieval,
+        )
+
     def retrieve(self, question: Dict, evidence: List[Evidence]) -> Tuple[List[Evidence], Dict]:
         answer_format = question.get("answer_format", "mcq")
         domain = question.get("domain", "")
@@ -310,7 +319,16 @@ class BM25Retriever:
         queries = self._build_queries(question)
 
         if not chunks or not queries:
-            return evidence, self._empty_stats("bm25", len(chunks), len(queries))
+            empty_stats = self._empty_stats("bm25", len(chunks), len(queries))
+            if self.log_retrieval:
+                self.retrieval_logger.dump(
+                    qid=question.get("qid", ""),
+                    question=question,
+                    queries=queries,
+                    chunks=[],
+                    stats=empty_stats,
+                )
+            return evidence, empty_stats
 
         idf, avgdl = self._build_idf(chunks)
         candidates = self._score_chunks(chunks, queries, idf, avgdl)
@@ -386,6 +404,15 @@ class BM25Retriever:
                 for doc_id, items in by_doc.items()
             },
         }
+        if self.log_retrieval:
+            self.retrieval_logger.dump(
+                qid=question.get("qid", ""),
+                question=question,
+                queries=queries,
+                chunks=limited,
+                stats=stats,
+            )
+
         return retrieved, stats
 
     def _empty_stats(self, method: str, chunk_count: int, query_count: int) -> Dict:

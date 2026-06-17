@@ -99,3 +99,8 @@ domains:
   research:
     name: "行业研报"
     doc_count: 20
+
+# 检索日志（每次跑覆盖；落盘失败不影响主流程）
+logging:
+  log_retrieval: true
+  retrieval_log_dir: "logs"
