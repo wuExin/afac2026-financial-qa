@@ -18,13 +18,54 @@ data:
 
 # 检索配置
 retrieval:
-  embedding_model: "text-embedding-v3"
-  top_k: 10
-  chunk_size: 512
-  chunk_overlap: 128
-  hybrid_search: true
-  keyword_weight: 0.3
-  vector_weight: 0.7
+  enabled: true
+  method: "bm25"  # bm25 或 keyword_window
+
+  # BM25 参数
+  bm25_k1: 1.5
+  bm25_b: 0.75
+
+  # 按领域设置 chunk 长度，避免财报/合同表格被切得太碎。
+  chunk_size_chars:
+    default: 1400
+    insurance: 1600
+    regulatory: 1200
+    financial_contracts: 1800
+    financial_reports: 2200
+    research: 1800
+  chunk_overlap_chars: 250
+  min_chunk_chars: 200
+
+  # 命中 chunk 后向前/向后扩展，再按行边界修复。
+  expand_before_chars: 800
+  expand_after_chars: 1200
+  merge_gap_chars: 500
+
+  # 跨文档配额与题型预算。
+  per_doc_min: 1
+  per_doc_max:
+    mcq: 2
+    tf: 2
+    multi: 3
+  global_top_k:
+    mcq: 6
+    tf: 6
+    multi: 10
+  max_total_chars:
+    mcq: 24000
+    tf: 24000
+    multi: 45000
+
+  # PromptBuilder 仍会做单文档保护性截断，需高于常规召回片段总量。
+  max_doc_chars: 45000
+  min_score: 0.1
+  max_query_terms: 120
+
+  # 旧版 keyword_window 回退参数。
+  window_chars: 3000
+  window_overlap: 800
+  top_k: 8
+  per_doc_top_k: 3
 
 # Agent 配置
 agent:
