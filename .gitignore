@@ -5,6 +5,9 @@ data/*
 # 输出
 output/
 
+# 检索日志（运行时产物，每次跑覆盖）
+logs/
+
 # 环境变量
 .env
 
@@ -41,6 +44,7 @@ GEMINI.md
 
 # 个人 AI 交互配置（不纳入项目）
 /.claude/
+/.superpowers/
 /.codex/
 /.codex-runs/
 /.kimi/
