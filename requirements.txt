@@ -12,3 +12,6 @@ pymupdf4llm>=0.0.17  # PDF 转 Markdown
 
 # 以下依赖仅在 design-draft/ 实验代码中使用，baseline 运行不需要：
 # tiktoken, numpy, pandas, faiss-cpu, sentence-transformers, tqdm, jupyter
+
+# 开发依赖（测试用，baseline 运行不需要）
+pytest>=7.4.0
