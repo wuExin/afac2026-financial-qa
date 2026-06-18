@@ -37,8 +37,11 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   color: #222;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 #app { display: flex; height: 100vh; }
 .sidebar {
@@ -379,8 +382,8 @@ def load_logs(log_dir: Path):
 
 def render_html(records, failed):
     data = {"records": records, "failed": failed}
-    data_json = json.dumps(data, ensure_ascii=False)
-    return HTML_TEMPLATE.replace("__DATA_PLACEHOLDER__", escape(data_json))
+    data_json = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
+    return HTML_TEMPLATE.replace("__DATA_PLACEHOLDER__", data_json)
 
 
 def main():
