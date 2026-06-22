@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BM25 检索调试</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --line: #d7dce2;
+      --text: #1f2933;
+      --muted: #65758b;
+      --accent: #2563eb;
+      --accent-weak: #e8f0ff;
+      --danger: #b42318;
+      --success: #147d64;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    h1 { margin: 0; font-size: 18px; font-weight: 650; }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      font: inherit;
+      background: white;
+      color: var(--text);
+    }
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(260px, 320px) minmax(420px, 1fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: calc(100vh - 56px);
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      overflow: auto;
+    }
+    h2 { margin: 0 0 10px; font-size: 15px; }
+    label { display: block; margin: 10px 0 5px; font-size: 12px; color: var(--muted); }
+    .toolbar { display: flex; gap: 8px; align-items: center; }
+    .question-list { display: grid; gap: 6px; margin-top: 10px; }
+    .question-item {
+      text-align: left;
+      width: 100%;
+      height: auto;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .question-item.active { border-color: var(--accent); background: var(--accent-weak); }
+    .params { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      background: #fbfcfe;
+    }
+    .stat strong { display: block; font-size: 18px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .chunk {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: white;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+      font-family: Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .error {
+      display: none;
+      color: var(--danger);
+      border: 1px solid #f3b3ad;
+      background: #fff4f2;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    .empty { color: var(--muted); padding: 16px; text-align: center; }
+    @media (max-width: 1100px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BM25 检索调试</h1>
+    <div class="toolbar">
+      <input id="fileInput" type="file" accept=".json,application/json">
+      <button id="resetParamsBtn" type="button">重置参数</button>
+      <button id="searchBtn" class="primary" type="button">搜索</button>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>题目</h2>
+      <div id="errorBox" class="error"></div>
+      <label for="jsonInput">JSON</label>
+      <textarea id="jsonInput" spellcheck="false"></textarea>
+      <button id="parseBtn" type="button">解析 JSON</button>
+      <label for="filterInput">过滤题目</label>
+      <input id="filterInput" type="search" placeholder="qid / domain / answer_format">
+      <div id="questionList" class="question-list"></div>
+    </section>
+    <section>
+      <h2>参数</h2>
+      <div id="paramsForm" class="params"></div>
+    </section>
+    <section>
+      <h2>结果</h2>
+      <div id="stats"></div>
+      <div id="results" class="empty">等待搜索</div>
+    </section>
+  </main>
+  <script>
+    const defaultParams = {
+      bm25_k1: 1.5,
+      bm25_b: 0.75,
+      chunk_size_chars: 1400,
+      chunk_overlap_chars: 250,
+      min_chunk_chars: 200,
+      expand_before_chars: 800,
+      expand_after_chars: 1200,
+      merge_gap_chars: 500,
+      per_doc_min: 1,
+      per_doc_max: 3,
+      global_top_k: 8,
+      max_total_chars: 60000,
+      min_score: 0.1,
+      max_query_terms: 120
+    };
+    let questions = [];
+    let selectedIndex = -1;
+
+    const el = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[ch]));
+
+    function showError(message) {
+      const box = el("errorBox");
+      box.textContent = message;
+      box.style.display = message ? "block" : "none";
+    }
+
+    function normalizeQuestions(value) {
+      if (Array.isArray(value)) return value;
+      if (value && typeof value === "object") return [value];
+      throw new Error("JSON 必须是单题对象或题目数组");
+    }
+
+    function parseJsonInput() {
+      const parsed = JSON.parse(el("jsonInput").value);
+      questions = normalizeQuestions(parsed);
+      selectedIndex = questions.length ? 0 : -1;
+      renderQuestionList();
+      showError("");
+    }
+
+    function renderQuestionList() {
+      const filter = el("filterInput").value.trim().toLowerCase();
+      const list = el("questionList");
+      list.innerHTML = "";
+      questions.forEach((q, index) => {
+        const haystack = `${q.qid || ""} ${q.domain || ""} ${q.answer_format || ""}`.toLowerCase();
+        if (filter && !haystack.includes(filter)) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `question-item${index === selectedIndex ? " active" : ""}`;
+        btn.innerHTML = `<strong>${escapeHtml(q.qid || `#${index + 1}`)}</strong><br>${escapeHtml(q.domain || "")} · ${escapeHtml(q.answer_format || "")}`;
+        btn.onclick = () => {
+          selectedIndex = index;
+          renderQuestionList();
+        };
+        list.appendChild(btn);
+      });
+      if (!list.children.length) {
+        list.innerHTML = '<div class="empty">没有匹配题目</div>';
+      }
+    }
+
+    function renderParams() {
+      const form = el("paramsForm");
+      form.innerHTML = "";
+      Object.entries(defaultParams).forEach(([key, value]) => {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `<label for="param_${key}">${key}</label><input id="param_${key}" type="number" step="any" value="${value}">`;
+        form.appendChild(wrap);
+      });
+    }
+
+    function collectParams() {
+      const params = {};
+      Object.keys(defaultParams).forEach(key => {
+        const value = el(`param_${key}`).value;
+        if (value !== "") params[key] = Number(value);
+      });
+      return params;
+    }
+
+    async function search() {
+      if (selectedIndex < 0 || !questions[selectedIndex]) {
+        showError("请先解析并选择一道题");
+        return;
+      }
+      showError("");
+      el("results").className = "empty";
+      el("results").textContent = "搜索中";
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: questions[selectedIndex], params: collectParams()})
+      });
+      const payload = await response.json();
+      if (!payload.ok) {
+        showError(payload.error || "搜索失败");
+        el("results").textContent = "搜索失败";
+        return;
+      }
+      renderStats(payload.stats || {});
+      renderResults(payload);
+    }
+
+    function renderStats(stats) {
+      const keys = ["query_count", "chunk_count", "candidate_count", "retrieved_windows", "doc_coverage", "max_bm25_score", "avg_bm25_score"];
+      el("stats").innerHTML = `<div class="stat-grid">${keys.map(key => `
+        <div class="stat"><strong>${escapeHtml(formatNumber(stats[key]))}</strong><span>${key}</span></div>
+      `).join("")}</div>`;
+    }
+
+    function formatNumber(value) {
+      return typeof value === "number" ? value.toFixed(value % 1 === 0 ? 0 : 4) : (value ?? "");
+    }
+
+    function renderResults(payload) {
+      const chunks = payload.chunks && payload.chunks.length ? payload.chunks : payload.retrieved || [];
+      if (!chunks.length) {
+        el("results").className = "empty";
+        el("results").textContent = "没有命中片段";
+        return;
+      }
+      el("results").className = "";
+      el("results").innerHTML = chunks.map(chunk => `
+        <article class="chunk">
+          <div class="meta">
+            <span>doc_id=${escapeHtml(chunk.doc_id)}</span>
+            <span>source=${escapeHtml(chunk.source)}</span>
+            <span>pos=${escapeHtml(chunk.start ?? "")}-${escapeHtml(chunk.end ?? "")}</span>
+            <span>score=${escapeHtml(formatNumber(chunk.score ?? chunk.relevance_score))}</span>
+            <span>query=${escapeHtml((chunk.query_types || []).join(","))}</span>
+          </div>
+          <pre>${escapeHtml(chunk.text || chunk.content || "")}</pre>
+        </article>
+      `).join("");
+    }
+
+    el("parseBtn").onclick = () => {
+      try { parseJsonInput(); } catch (err) { showError(err.message); }
+    };
+    el("filterInput").oninput = renderQuestionList;
+    el("searchBtn").onclick = () => search().catch(err => showError(err.message));
+    el("resetParamsBtn").onclick = renderParams;
+    el("fileInput").onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      el("jsonInput").value = await file.text();
+      try { parseJsonInput(); } catch (err) { showError(err.message); }
+    };
+    renderParams();
+  </script>
+</body>
+</html>
