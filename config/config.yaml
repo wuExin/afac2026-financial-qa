@@ -94,6 +94,13 @@ domains:
     name: "行业研报"
     doc_count: 20
 
+# 反思机制：BM25 低置信度时让 LLM 自评修正
+reflection:
+  enabled: true
+  low_score_threshold: 80.0      # max_bm25_score < 此值时触发
+  top_gap_ratio: 0.15            # (top1-top2)/top1 < 此值时触发
+  log_decisions: true            # 记录触发原因到结果 dict
+
 # 检索日志（每次跑覆盖；落盘失败不影响主流程）
 logging:
   log_retrieval: true
