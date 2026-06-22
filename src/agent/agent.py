@@ -791,6 +791,37 @@ class AnswerValidator:
         raise ValueError(f"Invalid answer '{answer}' for format '{answer_format}'")
 
 
+def should_reflect(retrieval_stats: Dict, reflection_config: Dict) -> Tuple[bool, str]:
+    """根据 BM25 检索 stats 和 reflection 配置判断是否需要反思。
+
+    返回 (是否触发, 触发原因)。
+    原因可能是 ""（不触发）、"low_score"、"small_gap"。
+    """
+    if not reflection_config.get("enabled", False):
+        return False, ""
+
+    retrieved_windows = retrieval_stats.get("retrieved_windows", 0)
+    if retrieved_windows == 0:
+        return False, ""
+
+    low_threshold = float(reflection_config.get("low_score_threshold", 80.0))
+    top_gap_ratio = float(reflection_config.get("top_gap_ratio", 0.15))
+
+    top1 = float(retrieval_stats.get("top1_score", 0.0))
+    top2 = float(retrieval_stats.get("top2_score", 0.0))
+
+    if top1 < low_threshold:
+        return True, "low_score"
+
+    # 仅当存在第二个候选时才比较 gap
+    if top2 > 0 and top1 > 0:
+        gap = (top1 - top2) / top1
+        if gap < top_gap_ratio:
+            return True, "small_gap"
+
+    return False, ""
+
+
 class FinancialQAAgent:
     """金融长文本问答 Agent（Baseline No-Tool 版）"""
 
