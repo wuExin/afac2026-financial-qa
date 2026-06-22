@@ -431,3 +431,66 @@ def test_answer_question_reflection_parse_fail_keeps_first_answer(
     assert answer == "A"  # fail-safe 保留首轮
     assert token_usage["reflection_decision"] == "PARSE_FAIL"
     assert token_usage["reflected"] is True
+
+
+def test_answer_question_reflection_llm_error_keeps_first_answer(
+    fake_question, fake_evidence,
+):
+    """反思 LLM 调用抛异常时应保留首轮答案，不丢弃。"""
+    agent = FinancialQAAgent.__new__(FinancialQAAgent)
+    agent.config = {
+        "model": {"max_context_tokens": 80000},
+        "retrieval": {"enabled": True, "max_doc_chars": 16000, "method": "bm25"},
+        "reflection": {
+            "enabled": True,
+            "low_score_threshold": 80.0,
+            "top_gap_ratio": 0.15,
+            "log_decisions": True,
+        },
+        "data": {"markdown_dir": "data/merged_md"},
+    }
+    agent.context_manager = ContextManager(max_chars=99999, max_doc_chars=16000)
+    agent.retrieval_enabled = True
+    agent.retriever = MagicMock()
+    agent.retriever.retrieve.return_value = (
+        fake_evidence,
+        {
+            "retrieval_method": "bm25_window",
+            "retrieved_windows": 2,
+            "max_bm25_score": 50.0,  # 触发 low_score
+            "top1_score": 50.0,
+            "top2_score": 40.0,
+        },
+    )
+    agent.prompt_builder = MagicMock()
+    agent.prompt_builder.build_prompt.return_value = "FIRST_PROMPT"
+    agent.reflection_prompt_builder = ReflectionPromptBuilder()
+    agent.reflection_enabled = True
+    agent.reflection_config = {
+        "enabled": True,
+        "low_score_threshold": 80.0,
+        "top_gap_ratio": 0.15,
+        "log_decisions": True,
+    }
+    agent.memory = MagicMock()
+
+    first_resp = MagicMock(content="A", finish_reason="stop")
+    first_resp.usage = MagicMock(
+        prompt_tokens=100, completion_tokens=10, total_tokens=110,
+    )
+    agent.llm = MagicMock()
+    # 首轮成功，反思抛异常
+    agent.llm.chat.side_effect = [
+        first_resp,
+        RuntimeError("rate limit exceeded"),
+    ]
+
+    agent._load_evidence = MagicMock(return_value=fake_evidence)
+
+    answer, _, token_usage = agent.answer_question(fake_question)
+
+    assert answer == "A"  # fail-safe 保留首轮
+    assert token_usage["reflected"] is True
+    assert token_usage["reflection_decision"] == "LLM_ERROR"
+    # 只计入首轮 token，反思失败的 token 不计入
+    assert token_usage["total_tokens"] == 110

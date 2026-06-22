@@ -1108,26 +1108,32 @@ class FinancialQAAgent:
             triggered, reason = should_reflect(retrieval_stats, self.reflection_config)
             reflection_trigger_reason = reason
             if triggered:
-                reflect_prompt = self.reflection_prompt_builder.build_prompt(
-                    question, evidence, first_answer, local_context,
-                )
-                reflect_prompt = local_context.truncate(reflect_prompt)
-                reflect_response = self.llm.chat(
-                    [{"role": "user", "content": reflect_prompt}], max_tokens=4096,
-                )
-                decision, parsed_answer = _parse_reflection_decision(
-                    reflect_response.content, first_answer,
-                    question.get("answer_format", "mcq"),
-                )
-                reflected = True
-                reflection_decision = decision
-                if decision != "PARSE_FAIL":
-                    answer = parsed_answer
-                # PARSE_FAIL 时保留首轮 answer（fail-safe）
+                try:
+                    reflect_prompt = self.reflection_prompt_builder.build_prompt(
+                        question, evidence, first_answer, local_context,
+                    )
+                    reflect_prompt = local_context.truncate(reflect_prompt)
+                    reflect_response = self.llm.chat(
+                        [{"role": "user", "content": reflect_prompt}], max_tokens=4096,
+                    )
+                    decision, parsed_answer = _parse_reflection_decision(
+                        reflect_response.content, first_answer,
+                        question.get("answer_format", "mcq"),
+                    )
+                    reflected = True
+                    reflection_decision = decision
+                    if decision != "PARSE_FAIL":
+                        answer = parsed_answer
+                    # PARSE_FAIL 时保留首轮 answer（fail-safe）
 
-                total_prompt += reflect_response.usage.prompt_tokens
-                total_completion += reflect_response.usage.completion_tokens
-                total_tokens += reflect_response.usage.total_tokens
+                    total_prompt += reflect_response.usage.prompt_tokens
+                    total_completion += reflect_response.usage.completion_tokens
+                    total_tokens += reflect_response.usage.total_tokens
+                except Exception as reflect_err:
+                    # 反思调用失败时保留 first_answer，不丢弃首轮结果
+                    print(f"  [reflection_failed] {reflect_err}")
+                    reflected = True
+                    reflection_decision = "LLM_ERROR"
 
         token_usage = {
             "prompt_tokens": total_prompt,
