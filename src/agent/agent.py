@@ -914,6 +914,15 @@ class FinancialQAAgent:
         else:
             self.retriever = BM25Retriever(retrieval_cfg)
         self.prompt_builder = PromptBuilder()
+        self.reflection_prompt_builder = ReflectionPromptBuilder()
+        reflection_cfg = self.config.get("reflection", {}) or {}
+        self.reflection_enabled = bool(reflection_cfg.get("enabled", False))
+        self.reflection_config = {
+            "enabled": self.reflection_enabled,
+            "low_score_threshold": float(reflection_cfg.get("low_score_threshold", 80.0)),
+            "top_gap_ratio": float(reflection_cfg.get("top_gap_ratio", 0.15)),
+            "log_decisions": bool(reflection_cfg.get("log_decisions", True)),
+        }
         self.memory = MemoryState()
 
         model_cfg = self.config.get("model", {})
@@ -1084,13 +1093,51 @@ class FinancialQAAgent:
             local_context.max_doc_chars = old_max
 
         # 4. 从内容中提取答案
-        answer = self._parse_answer(response, question.get("answer_format", "mcq"))
+        first_answer = self._parse_answer(response, question.get("answer_format", "mcq"))
+        answer = first_answer
+
+        reflected = False
+        reflection_decision = ""
+        reflection_trigger_reason = ""
+        total_prompt = response.usage.prompt_tokens
+        total_completion = response.usage.completion_tokens
+        total_tokens = response.usage.total_tokens
+
+        # 5. 反思环节：BM25 低置信度时让 LLM 自评修正
+        if self.reflection_enabled:
+            triggered, reason = should_reflect(retrieval_stats, self.reflection_config)
+            reflection_trigger_reason = reason
+            if triggered:
+                reflect_prompt = self.reflection_prompt_builder.build_prompt(
+                    question, evidence, first_answer, local_context,
+                )
+                reflect_prompt = local_context.truncate(reflect_prompt)
+                reflect_response = self.llm.chat(
+                    [{"role": "user", "content": reflect_prompt}], max_tokens=4096,
+                )
+                decision, parsed_answer = _parse_reflection_decision(
+                    reflect_response.content, first_answer,
+                    question.get("answer_format", "mcq"),
+                )
+                reflected = True
+                reflection_decision = decision
+                if decision != "PARSE_FAIL":
+                    answer = parsed_answer
+                # PARSE_FAIL 时保留首轮 answer（fail-safe）
+
+                total_prompt += reflect_response.usage.prompt_tokens
+                total_completion += reflect_response.usage.completion_tokens
+                total_tokens += reflect_response.usage.total_tokens
 
         token_usage = {
-            "prompt_tokens": response.usage.prompt_tokens,
-            "completion_tokens": response.usage.completion_tokens,
-            "total_tokens": response.usage.total_tokens,
+            "prompt_tokens": total_prompt,
+            "completion_tokens": total_completion,
+            "total_tokens": total_tokens,
             "retries": retry_count,
+            "reflected": reflected,
+            "first_answer": first_answer,
+            "reflection_decision": reflection_decision,
+            "reflection_trigger_reason": reflection_trigger_reason,
             **retrieval_stats,
         }
 

@@ -1,10 +1,12 @@
 """反思机制单元测试。"""
 import pytest
+from unittest.mock import MagicMock
 
 from src.agent.agent import (
     BM25Retriever,
     ContextManager,
     Evidence,
+    FinancialQAAgent,
     ReflectionPromptBuilder,
     _parse_reflection_decision,
     should_reflect,
@@ -239,3 +241,193 @@ def test_parse_reflection_invalid_letter_returns_first_answer():
     decision, answer = _parse_reflection_decision("CHANGE E", "A", "mcq")
     assert decision == "PARSE_FAIL"
     assert answer == "A"
+
+
+def test_answer_question_triggers_reflection_on_low_score(
+    fake_question, fake_evidence, monkeypatch,
+):
+    """max_bm25_score 低时应触发反思，最终答案取反思结果。"""
+    # 构造一个 stats 看起来低置信的场景：用 mock 替换 retriever
+    agent = FinancialQAAgent.__new__(FinancialQAAgent)
+    agent.config = {
+        "model": {"max_context_tokens": 80000},
+        "retrieval": {"enabled": True, "max_doc_chars": 16000, "method": "bm25"},
+        "reflection": {
+            "enabled": True,
+            "low_score_threshold": 80.0,
+            "top_gap_ratio": 0.15,
+            "log_decisions": True,
+        },
+        "data": {"markdown_dir": "data/merged_md"},
+    }
+    agent.context_manager = ContextManager(max_chars=99999, max_doc_chars=16000)
+    agent.retrieval_enabled = True
+    agent.retriever = MagicMock()
+    # 模拟 BM25 检索置信度低（max=50 < 80）
+    agent.retriever.retrieve.return_value = (
+        fake_evidence,
+        {
+            "retrieval_method": "bm25_window",
+            "retrieved_windows": 2,
+            "max_bm25_score": 50.0,
+            "top1_score": 50.0,
+            "top2_score": 40.0,
+        },
+    )
+    agent.prompt_builder = MagicMock()
+    agent.prompt_builder.build_prompt.return_value = "FIRST_PROMPT"
+    agent.reflection_prompt_builder = ReflectionPromptBuilder()
+    agent.reflection_enabled = True
+    agent.reflection_config = {
+        "enabled": True,
+        "low_score_threshold": 80.0,
+        "top_gap_ratio": 0.15,
+        "log_decisions": True,
+    }
+    agent.memory = MagicMock()
+
+    # 模拟首轮 LLM 答案 A，反思 LLM 改为 B
+    first_resp = MagicMock(content="A", finish_reason="stop")
+    first_resp.usage = MagicMock(
+        prompt_tokens=100, completion_tokens=10, total_tokens=110,
+    )
+    reflect_resp = MagicMock(content="CHANGE B", finish_reason="stop")
+    reflect_resp.usage = MagicMock(
+        prompt_tokens=120, completion_tokens=20, total_tokens=140,
+    )
+    agent.llm = MagicMock()
+    agent.llm.chat.side_effect = [first_resp, reflect_resp]
+
+    # 跳过真实文档加载
+    agent._load_evidence = MagicMock(return_value=fake_evidence)
+
+    answer, evidence, token_usage = agent.answer_question(fake_question)
+
+    assert answer == "B"  # 反思后改为 B
+    assert token_usage["reflected"] is True
+    assert token_usage["first_answer"] == "A"
+    assert token_usage["reflection_decision"] == "CHANGE"
+    assert token_usage["reflection_trigger_reason"] == "low_score"
+    # 两次 LLM 调用 token 应合并
+    assert token_usage["total_tokens"] == 110 + 140
+
+
+def test_answer_question_skips_reflection_when_confidence_high(
+    fake_question, fake_evidence,
+):
+    """高置信度时不应触发反思，只调用一次 LLM。"""
+    agent = FinancialQAAgent.__new__(FinancialQAAgent)
+    agent.config = {
+        "model": {"max_context_tokens": 80000},
+        "retrieval": {"enabled": True, "max_doc_chars": 16000, "method": "bm25"},
+        "reflection": {
+            "enabled": True,
+            "low_score_threshold": 80.0,
+            "top_gap_ratio": 0.15,
+            "log_decisions": True,
+        },
+        "data": {"markdown_dir": "data/merged_md"},
+    }
+    agent.context_manager = ContextManager(max_chars=99999, max_doc_chars=16000)
+    agent.retrieval_enabled = True
+    agent.retriever = MagicMock()
+    # 高置信度：max=200，gap 大
+    agent.retriever.retrieve.return_value = (
+        fake_evidence,
+        {
+            "retrieval_method": "bm25_window",
+            "retrieved_windows": 3,
+            "max_bm25_score": 200.0,
+            "top1_score": 200.0,
+            "top2_score": 100.0,  # gap=0.5 > 0.15
+        },
+    )
+    agent.prompt_builder = MagicMock()
+    agent.prompt_builder.build_prompt.return_value = "FIRST_PROMPT"
+    agent.reflection_prompt_builder = ReflectionPromptBuilder()
+    agent.reflection_enabled = True
+    agent.reflection_config = {
+        "enabled": True,
+        "low_score_threshold": 80.0,
+        "top_gap_ratio": 0.15,
+        "log_decisions": True,
+    }
+    agent.memory = MagicMock()
+
+    first_resp = MagicMock(content="A", finish_reason="stop")
+    first_resp.usage = MagicMock(
+        prompt_tokens=100, completion_tokens=10, total_tokens=110,
+    )
+    agent.llm = MagicMock()
+    agent.llm.chat.return_value = first_resp
+
+    agent._load_evidence = MagicMock(return_value=fake_evidence)
+
+    answer, evidence, token_usage = agent.answer_question(fake_question)
+
+    assert answer == "A"
+    assert token_usage["reflected"] is False
+    assert agent.llm.chat.call_count == 1  # 没调反思
+
+
+def test_answer_question_reflection_parse_fail_keeps_first_answer(
+    fake_question, fake_evidence,
+):
+    """反思输出无法解析时应保留首轮答案（fail-safe）。"""
+    agent = FinancialQAAgent.__new__(FinancialQAAgent)
+    agent.config = {
+        "model": {"max_context_tokens": 80000},
+        "retrieval": {"enabled": True, "max_doc_chars": 16000, "method": "bm25"},
+        "reflection": {
+            "enabled": True,
+            "low_score_threshold": 80.0,
+            "top_gap_ratio": 0.15,
+            "log_decisions": True,
+        },
+        "data": {"markdown_dir": "data/merged_md"},
+    }
+    agent.context_manager = ContextManager(max_chars=99999, max_doc_chars=16000)
+    agent.retrieval_enabled = True
+    agent.retriever = MagicMock()
+    agent.retriever.retrieve.return_value = (
+        fake_evidence,
+        {
+            "retrieval_method": "bm25_window",
+            "retrieved_windows": 2,
+            "max_bm25_score": 50.0,  # 触发 low_score
+            "top1_score": 50.0,
+            "top2_score": 40.0,
+        },
+    )
+    agent.prompt_builder = MagicMock()
+    agent.prompt_builder.build_prompt.return_value = "FIRST_PROMPT"
+    agent.reflection_prompt_builder = ReflectionPromptBuilder()
+    agent.reflection_enabled = True
+    agent.reflection_config = {
+        "enabled": True,
+        "low_score_threshold": 80.0,
+        "top_gap_ratio": 0.15,
+        "log_decisions": True,
+    }
+    agent.memory = MagicMock()
+
+    first_resp = MagicMock(content="A", finish_reason="stop")
+    first_resp.usage = MagicMock(
+        prompt_tokens=100, completion_tokens=10, total_tokens=110,
+    )
+    reflect_resp = MagicMock(
+        content="我觉得选项 A 是对的", finish_reason="stop",  # 无法解析
+    )
+    reflect_resp.usage = MagicMock(
+        prompt_tokens=120, completion_tokens=30, total_tokens=150,
+    )
+    agent.llm = MagicMock()
+    agent.llm.chat.side_effect = [first_resp, reflect_resp]
+
+    agent._load_evidence = MagicMock(return_value=fake_evidence)
+
+    answer, _, token_usage = agent.answer_question(fake_question)
+
+    assert answer == "A"  # fail-safe 保留首轮
+    assert token_usage["reflection_decision"] == "PARSE_FAIL"
+    assert token_usage["reflected"] is True
