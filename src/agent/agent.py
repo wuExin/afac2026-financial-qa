@@ -865,6 +865,38 @@ def should_reflect(retrieval_stats: Dict, reflection_config: Dict) -> Tuple[bool
     return False, ""
 
 
+def _parse_reflection_decision(
+    raw: str, first_answer: str, answer_format: str,
+) -> Tuple[str, str]:
+    """从反思输出中提取决策和答案。
+
+    支持格式：
+    - "KEEP A" / "keep A"  → ("KEEP", "A")
+    - "CHANGE B"           → ("CHANGE", "B")
+    - "KEEP ABC" (multi)   → ("KEEP", "ABC")
+    - 无法解析              → ("PARSE_FAIL", first_answer)  # fail-safe
+    """
+    import re
+
+    text = raw.strip().upper()
+    # 匹配 KEEP 或 CHANGE 开头，后跟可选分隔符，再跟 1-4 个 A-D 字母
+    match = re.search(r"\b(KEEP|CHANGE)\s+([A-D]{1,4})\b", text)
+    if not match:
+        return "PARSE_FAIL", first_answer
+
+    decision = match.group(1)
+    raw_letters = match.group(2)
+
+    # 走 normalize_answer + validate 以确保格式合法
+    normalized = normalize_answer(raw_letters, answer_format)
+    try:
+        AnswerValidator.validate(normalized, answer_format)
+    except ValueError:
+        return "PARSE_FAIL", first_answer
+
+    return decision, normalized
+
+
 class FinancialQAAgent:
     """金融长文本问答 Agent（Baseline No-Tool 版）"""
 

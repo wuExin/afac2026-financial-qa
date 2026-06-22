@@ -6,6 +6,7 @@ from src.agent.agent import (
     ContextManager,
     Evidence,
     ReflectionPromptBuilder,
+    _parse_reflection_decision,
     should_reflect,
 )
 
@@ -178,3 +179,63 @@ def test_reflection_prompt_respects_max_chars_truncation(fake_question):
         fake_question, big_evidence, "A", context_manager=cm,
     )
     assert len(prompt) <= 6000  # 截断后留一点余量
+
+
+def test_parse_reflection_keep_decision():
+    """KEEP 输出应保留原字母。"""
+    decision, answer = _parse_reflection_decision("KEEP A", "A", "mcq")
+    assert decision == "KEEP"
+    assert answer == "A"
+
+
+def test_parse_reflection_change_decision():
+    """CHANGE 输出应替换为新字母。"""
+    decision, answer = _parse_reflection_decision("CHANGE B", "A", "mcq")
+    assert decision == "CHANGE"
+    assert answer == "B"
+
+
+def test_parse_reflection_multi_keep():
+    """多选题 KEEP 保留多字母组合。"""
+    decision, answer = _parse_reflection_decision("KEEP ABC", "ABC", "multi")
+    assert decision == "KEEP"
+    assert answer == "ABC"
+
+
+def test_parse_reflection_multi_change():
+    """多选题 CHANGE 替换为新的多字母组合。"""
+    decision, answer = _parse_reflection_decision("CHANGE ABD", "ABC", "multi")
+    assert decision == "CHANGE"
+    assert answer == "ABD"
+
+
+def test_parse_reflection_handles_leading_text():
+    """输出前有自然语言描述也应能提取决策。"""
+    decision, answer = _parse_reflection_decision(
+        "经过分析，初答正确。\nKEEP A", "A", "mcq",
+    )
+    assert decision == "KEEP"
+    assert answer == "A"
+
+
+def test_parse_reflection_lowercase_input():
+    """大小写不敏感。"""
+    decision, answer = _parse_reflection_decision("keep a", "A", "mcq")
+    assert decision == "KEEP"
+    assert answer == "A"
+
+
+def test_parse_reflection_parse_fail_returns_first_answer():
+    """无法解析时返回 PARSE_FAIL 并保留首轮答案。"""
+    decision, answer = _parse_reflection_decision(
+        "我认为选项 A 是对的", "A", "mcq",
+    )
+    assert decision == "PARSE_FAIL"
+    assert answer == "A"  # fail-safe 保留首轮
+
+
+def test_parse_reflection_invalid_letter_returns_first_answer():
+    """CHANGE 后跟无效字母（如 E）时视为解析失败。"""
+    decision, answer = _parse_reflection_decision("CHANGE E", "A", "mcq")
+    assert decision == "PARSE_FAIL"
+    assert answer == "A"
