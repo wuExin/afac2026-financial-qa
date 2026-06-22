@@ -3,7 +3,9 @@ import pytest
 
 from src.agent.agent import (
     BM25Retriever,
+    ContextManager,
     Evidence,
+    ReflectionPromptBuilder,
     should_reflect,
 )
 
@@ -141,3 +143,38 @@ def test_should_reflect_disabled_via_config():
     triggered, reason = should_reflect(stats, config)
     assert triggered is False
     assert reason == ""
+
+
+def test_reflection_prompt_includes_question_options_evidence_and_first_answer(
+    fake_question, fake_evidence,
+):
+    """反思 prompt 必须包含问题、所有选项、证据、首轮答案、KEEP/CHANGE 指令。"""
+    builder = ReflectionPromptBuilder()
+    prompt = builder.build_prompt(fake_question, fake_evidence, first_answer="BC")
+
+    assert "下列哪些属于应当识别的受益所有人" in prompt
+    assert "A. 公司高管" in prompt
+    assert "B. 实际控制人" in prompt
+    assert "C. 持股 25% 自然人" in prompt
+    assert "D. 员工" in prompt
+    assert "BC" in prompt  # first_answer 出现
+    assert "KEEP" in prompt or "CHANGE" in prompt
+    assert "金融机构应当识别客户的受益所有人" in prompt  # 证据内容
+
+
+def test_reflection_prompt_respects_max_chars_truncation(fake_question):
+    """超长 evidence 应被 ContextManager 截断，不直接撑爆 prompt。"""
+    big_evidence = [
+        Evidence(
+            doc_id="text01",
+            content="受益所有人" * 5000,
+            source="regulatory/text01",
+        ),
+    ]
+    builder = ReflectionPromptBuilder()
+    from src.agent.agent import ContextManager
+    cm = ContextManager(max_chars=5000, max_doc_chars=2000)
+    prompt = builder.build_prompt(
+        fake_question, big_evidence, "A", context_manager=cm,
+    )
+    assert len(prompt) <= 6000  # 截断后留一点余量

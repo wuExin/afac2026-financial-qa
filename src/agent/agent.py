@@ -763,6 +763,49 @@ class PromptBuilder:
         return prompt
 
 
+class ReflectionPromptBuilder:
+    """反思 prompt 构建器：让 LLM 对初答做二次核验。"""
+
+    def build_prompt(
+        self,
+        question: Dict,
+        evidence: List[Evidence],
+        first_answer: str,
+        context_manager: Optional[ContextManager] = None,
+    ) -> str:
+        """构建反思提示词。
+
+        结构：文档 + 问题 + 选项 + 初答 + KEEP/CHANGE 指令。
+        """
+        context_parts = []
+        for ev in evidence:
+            content = ev.content
+            if context_manager:
+                content = context_manager.truncate_doc(content)
+            context_parts.append(f"【文档 {ev.doc_id}】\n{content}")
+        context = "\n\n".join(context_parts)
+
+        options_text = "\n".join(
+            [f"{k}. {v}" for k, v in question.get("options", {}).items()]
+        )
+
+        prompt = (
+            "你是一位金融文档分析专家。请对下面的初答进行复核。\n\n"
+            "要求：\n"
+            "1. 仔细阅读文档，找出支持初答的具体证据（引用原文片段）\n"
+            "2. 对每个选项逐一判断：是否有明确证据支持或反驳\n"
+            "3. 如果初答正确，输出 \"KEEP {答案字母}\"\n"
+            "4. 如果发现错误，输出 \"CHANGE {答案字母}\"\n"
+            "5. 最终输出格式必须为 KEEP 或 CHANGE 开头，紧跟答案字母（多选按字母顺序排列）\n\n"
+            f"{context}\n\n"
+            f"问题：{question['question']}\n\n"
+            f"选项：\n{options_text}\n\n"
+            f"初答：{first_answer}\n\n"
+            f"反思结论："
+        )
+        return prompt
+
+
 class AnswerValidator:
     """答案校验器"""
 
