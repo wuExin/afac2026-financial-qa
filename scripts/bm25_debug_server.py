@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.agent.bm25_debug_service import run_debug_search
 
