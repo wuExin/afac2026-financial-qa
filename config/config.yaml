@@ -1,9 +1,9 @@
 # AFAC2026 赛道四 项目配置
 
-# 模型配置（阿里云百炼 Qwen 系列）
+# 模型配置（智谱 GLM；正式提交赛题时切回 Qwen 系列）
 model:
-  name: "qwen-plus"
-  api_base: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  name: "glm-5.1"
+  api_base: "https://open.bigmodel.cn/api/anthropic"
   fallback_name: ""  # 默认禁用 fallback，避免测试模型和提交模型混用
   max_tokens: 4096
   temperature: 0.0
@@ -27,13 +27,7 @@ retrieval:
   bm25_b: 0.75
 
   # 按领域设置 chunk 长度，避免财报/合同表格被切得太碎。
-  chunk_size_chars:
-    default: 1400
-    insurance: 1600
-    regulatory: 1200
-    financial_contracts: 1800
-    financial_reports: 2200
-    research: 1800
+  chunk_size_chars: 2000
   chunk_overlap_chars: 250
   min_chunk_chars: 200
 

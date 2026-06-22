@@ -18,6 +18,15 @@ from typing import Optional
 
 from openai import OpenAI, APIStatusError, APITimeoutError, APIConnectionError
 
+try:
+    from anthropic import Anthropic
+    from anthropic import APIStatusError as AnthropicAPIStatusError
+    from anthropic import APITimeoutError as AnthropicAPITimeoutError
+    from anthropic import APIConnectionError as AnthropicAPIConnectionError
+    _HAS_ANTHROPIC = True
+except ImportError:
+    _HAS_ANTHROPIC = False
+
 
 @dataclass
 class TokenUsage:
@@ -38,8 +47,12 @@ class LLMResponse:
     tool_calls: list = None
 
 
+def _is_anthropic_endpoint(base_url: str) -> bool:
+    return "/anthropic" in base_url
+
+
 class LLMClient:
-    """阿里云百炼双渠道客户端"""
+    """阿里云百炼 / 智谱 GLM 双协议客户端（OpenAI 兼容 + Anthropic 兼容）"""
 
     def __init__(
         self,
@@ -50,6 +63,7 @@ class LLMClient:
         fallback_model: str = "",
     ):
         is_qwen_endpoint = "dashscope.aliyuncs.com" in base_url or model.lower().startswith("qwen")
+        is_anthropic = _is_anthropic_endpoint(base_url)
         if not api_key:
             if is_qwen_endpoint:
                 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -64,50 +78,127 @@ class LLMClient:
         if not api_key:
             raise ValueError("缺少 API Key，请设置 LLM_API_KEY、DASHSCOPE_API_KEY 或 GLM_API_KEY")
 
+        if is_anthropic and not _HAS_ANTHROPIC:
+            raise ValueError("端点为 Anthropic 协议但未安装 anthropic SDK，请 pip install anthropic")
+
         # 主渠道
-        self.router_client = OpenAI(api_key=api_key, base_url=base_url)
+        if is_anthropic:
+            self.router_client = Anthropic(api_key=api_key, base_url=base_url)
+        else:
+            self.router_client = OpenAI(api_key=api_key, base_url=base_url)
         self.router_model = model
+        self.router_is_anthropic = is_anthropic
 
         # 回退渠道。为空时禁用，避免 GLM 测试时误回退到 Qwen 或反之。
-        self.fallback_client = OpenAI(api_key=api_key, base_url=base_url)
+        if is_anthropic:
+            self.fallback_client = Anthropic(api_key=api_key, base_url=base_url)
+        else:
+            self.fallback_client = OpenAI(api_key=api_key, base_url=base_url)
         self.fallback_model = fallback_model
+        self.fallback_is_anthropic = is_anthropic
 
         self.temperature = temperature
         self.total_usage = TokenUsage()
 
     @staticmethod
     def _extra_body_for_model(model: str) -> Optional[dict]:
-        """只给 Qwen 模型传百炼专属参数，避免其它兼容接口报错。"""
-        if model.lower().startswith("qwen"):
+        """为不同模型传专属参数（OpenAI 协议路径专用）。"""
+        m = model.lower()
+        if m.startswith("qwen"):
             return {"enable_thinking": False}
+        if m.startswith("glm"):
+            return {"thinking": {"type": "disabled"}}
         return None
 
     @staticmethod
     def _should_fallback(error: Exception) -> bool:
-        """判断是否需要回退到 turbo"""
+        """判断是否需要回退到 fallback"""
         if isinstance(error, APIStatusError):
             status = error.status_code
-            # 429: 限流；5xx: 服务端错误
             return status == 429 or status >= 500
         if isinstance(error, (APITimeoutError, APIConnectionError)):
             return True
+        if _HAS_ANTHROPIC:
+            if isinstance(error, AnthropicAPIStatusError):
+                status = error.status_code
+                return status == 429 or status >= 500
+            if isinstance(error, (AnthropicAPITimeoutError, AnthropicAPIConnectionError)):
+                return True
         return False
 
-    def _call_router(
+    def _call_anthropic(
         self,
+        client,
+        model: str,
         messages: list[dict],
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        tools: Optional[list] = None,
-        tool_choice: Optional[str] = None,
+        max_tokens: Optional[int],
+        temperature: Optional[float],
     ) -> LLMResponse:
-        """调用主渠道（qwen-plus）"""
+        """Anthropic 协议调用（智谱 Coding Plan 等）。"""
+        system_parts = []
+        user_messages = []
+        for m in messages:
+            if m.get("role") == "system":
+                system_parts.append(m.get("content", ""))
+            else:
+                user_messages.append(m)
+
         kwargs = dict(
-            model=self.router_model,
+            model=model,
+            messages=user_messages,
+            max_tokens=max_tokens or 4096,
+            temperature=temperature if temperature is not None else self.temperature,
+        )
+        if system_parts:
+            kwargs["system"] = "\n\n".join(system_parts)
+
+        resp = client.messages.create(**kwargs)
+
+        text_parts = []
+        tool_calls = []
+        for block in resp.content:
+            btype = getattr(block, "type", None)
+            if btype == "text":
+                text_parts.append(block.text)
+            elif btype == "tool_use":
+                tool_calls.append(block)
+
+        prompt_tokens = resp.usage.input_tokens
+        completion_tokens = resp.usage.output_tokens
+        usage = TokenUsage(
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            total_tokens=prompt_tokens + completion_tokens,
+        )
+        self.total_usage.prompt_tokens += usage.prompt_tokens
+        self.total_usage.completion_tokens += usage.completion_tokens
+        self.total_usage.total_tokens += usage.total_tokens
+
+        return LLMResponse(
+            content="".join(text_parts),
+            usage=usage,
+            finish_reason=resp.stop_reason or "",
+            model=resp.model,
+            tool_calls=tool_calls or None,
+        )
+
+    def _call_openai(
+        self,
+        client,
+        model: str,
+        messages: list[dict],
+        max_tokens: Optional[int],
+        temperature: Optional[float],
+        tools: Optional[list],
+        tool_choice: Optional[str],
+    ) -> LLMResponse:
+        """OpenAI 协议调用（Qwen / 智谱 paas/v4 等）。"""
+        kwargs = dict(
+            model=model,
             messages=messages,
             temperature=temperature if temperature is not None else self.temperature,
         )
-        extra_body = self._extra_body_for_model(self.router_model)
+        extra_body = self._extra_body_for_model(model)
         if extra_body:
             kwargs["extra_body"] = extra_body
         if max_tokens is not None:
@@ -116,7 +207,7 @@ class LLMClient:
             kwargs["tools"] = tools
             kwargs["tool_choice"] = tool_choice or "auto"
 
-        resp = self.router_client.chat.completions.create(**kwargs)
+        resp = client.chat.completions.create(**kwargs)
 
         usage = TokenUsage(
             prompt_tokens=resp.usage.prompt_tokens,
@@ -134,6 +225,24 @@ class LLMClient:
             finish_reason=resp.choices[0].finish_reason or "",
             model=resp.model,
             tool_calls=getattr(msg, "tool_calls", None),
+        )
+
+    def _call_router(
+        self,
+        messages: list[dict],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+        tools: Optional[list] = None,
+        tool_choice: Optional[str] = None,
+    ) -> LLMResponse:
+        """调用主渠道"""
+        if self.router_is_anthropic:
+            return self._call_anthropic(
+                self.router_client, self.router_model, messages, max_tokens, temperature
+            )
+        return self._call_openai(
+            self.router_client, self.router_model, messages,
+            max_tokens, temperature, tools, tool_choice,
         )
 
     def _call_fallback(
@@ -144,39 +253,14 @@ class LLMClient:
         tools: Optional[list] = None,
         tool_choice: Optional[str] = None,
     ) -> LLMResponse:
-        """调用回退渠道（qwen-turbo）"""
-        kwargs = dict(
-            model=self.fallback_model,
-            messages=messages,
-            temperature=temperature if temperature is not None else self.temperature,
-        )
-        extra_body = self._extra_body_for_model(self.fallback_model)
-        if extra_body:
-            kwargs["extra_body"] = extra_body
-        if max_tokens is not None:
-            kwargs["max_tokens"] = max_tokens
-        if tools is not None:
-            kwargs["tools"] = tools
-            kwargs["tool_choice"] = tool_choice or "auto"
-
-        resp = self.fallback_client.chat.completions.create(**kwargs)
-
-        usage = TokenUsage(
-            prompt_tokens=resp.usage.prompt_tokens,
-            completion_tokens=resp.usage.completion_tokens,
-            total_tokens=resp.usage.total_tokens,
-        )
-        self.total_usage.prompt_tokens += usage.prompt_tokens
-        self.total_usage.completion_tokens += usage.completion_tokens
-        self.total_usage.total_tokens += usage.total_tokens
-
-        msg = resp.choices[0].message
-        return LLMResponse(
-            content=msg.content or "",
-            usage=usage,
-            finish_reason=resp.choices[0].finish_reason or "",
-            model=resp.model,
-            tool_calls=getattr(msg, "tool_calls", None),
+        """调用回退渠道"""
+        if self.fallback_is_anthropic:
+            return self._call_anthropic(
+                self.fallback_client, self.fallback_model, messages, max_tokens, temperature
+            )
+        return self._call_openai(
+            self.fallback_client, self.fallback_model, messages,
+            max_tokens, temperature, tools, tool_choice,
         )
 
     def chat(
