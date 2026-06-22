@@ -14,7 +14,7 @@ data:
   dataset_dir: "data/raw_dataset"
   raw_dir: "data/raw_dataset/raw"
   questions_dir: "data/raw_dataset/questions/group_a"
-  processed_pymupdf4llm_dir: "data/merged_md"
+  markdown_dir: "data/merged_md"
   output_dir: "output"
 
 # 检索配置

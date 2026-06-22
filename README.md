@@ -80,16 +80,15 @@ afac2026-financial-qa/
 │   ├── raw_dataset/             # 原始数据集（PDF + 题目 JSON）
 │   │   ├── raw/                 # 原始 PDF 文档
 │   │   └── questions/           # 题目 JSON
-│   └── processed_pymupdf4llm/   # PyMuPDF4LLM 解析结果
+│   └── merged_md/               # MinerU 解析的 Markdown（赛题方提供）
 ├── src/                         # 源代码
 │   ├── agent/                   # Agent 主逻辑（问答、推理、记忆管理）
 │   │   ├── agent.py
 │   │   └── run.py               # 运行入口
 │   ├── evaluation/              # 评测与提交生成
 │   │   └── evaluator.py
-│   ├── preprocess/              # PDF 解析、文本提取
-│   │   ├── prepare_data.py
-│   │   └── pdf_to_md.py
+│   ├── preprocess/              # 数据准备（解压赛题 zip）
+│   │   └── prepare_data.py
 │   └── utils/                   # 工具函数
 │       ├── helpers.py           # Token 统计、答案校验、配置加载
 │       └── llm_client.py        # LLM 客户端封装

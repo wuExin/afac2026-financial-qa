@@ -68,7 +68,7 @@ flowchart TD
 flowchart LR
     subgraph Input[输入层]
         I1[题目 JSON]
-        I2[processed_pymupdf4llm Markdown]
+        I2[merged_md Markdown]
     end
 
     subgraph Retrieval[检索层]
@@ -121,7 +121,7 @@ flowchart LR
 
 基础策略：
 
-- 读取 `data/processed_pymupdf4llm/{domain}/{doc_id}/page_*.md`。
+- 读取 `data/merged_md/{domain}/{doc_id}.md`（单文件结构；如需分页可按标题或固定长度切分）。
 - 每个 chunk 保留元信息：
   - `domain`
   - `doc_id`

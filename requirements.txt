@@ -3,10 +3,6 @@
 openai>=1.30.0      # LLM API 调用（兼容百炼平台 DashScope）
 pyyaml>=6.0         # config.yaml 配置加载
 
-# 预处理阶段需要（生成 processed_pymupdf4llm/ 数据）
-# 如果你已经下载了解析后的数据，可以跳过安装
-pymupdf4llm>=0.0.17  # PDF 转 Markdown
-
 # 可选：若通过 .env 文件管理 API Key
 # python-dotenv>=1.0.0
 

@@ -822,10 +822,8 @@ class FinancialQAAgent:
     def _read_document(self, domain: str, doc_id: str) -> str:
         """读取已解析的文档内容，尝试多个数据路径"""
         roots = [
-            Path(self.config["data"].get("processed_pymupdf4llm_dir", "data/processed_pymupdf4llm")),
+            Path(self.config["data"].get("markdown_dir", "data/merged_md")),
             Path("data/merged_md"),
-            Path("design-draft/data/processed_pymupdf4llm"),
-            Path("data/processed_pymupdf4llm"),
         ]
 
         for root in roots:

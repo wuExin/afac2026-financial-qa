@@ -1,6 +1,6 @@
 # data/ — 数据集目录
 
-`data/` 存放赛题原始数据和解析产物。整体不纳入版本控制（已 gitignore），读者需自行下载数据集并运行解析脚本生成。
+`data/` 存放赛题原始数据和解析产物。整体不纳入版本控制（已 gitignore），读者需自行下载数据集；Markdown 解析产物由赛题方通过 MinerU 预先提供，无需本地解析。
 
 ## 当前状态
 
@@ -21,7 +21,7 @@ data/
 │       ├── insurance/                 # 16 个 PDF
 │       ├── regulatory/                # 26 个 PDF
 │       └── research/                  # 20 个 PDF
-└── processed_pymupdf4llm/             # pymupdf4llm 解析结果（运行脚本生成）
+└── merged_md/                         # MinerU 解析的 Markdown（赛题方提供）
     ├── financial_contracts/
     ├── financial_reports/
     ├── insurance/
@@ -44,13 +44,14 @@ data/
 
 1. **下载数据集**：从赛方获取 `public_dataset_a.zip`（约 274MB），放到 `data/` 目录下
    - 该文件不纳入 Git 版本控制，需自行下载
-2. **运行解析脚本**：
+2. **运行解压脚本**：
    ```bash
    python -m src.preprocess.prepare_data
    ```
-   该脚本会自动解压 zip 包，并调用 `pymupdf4llm` 把所有 PDF 转成 Markdown（每页一个 `page_XXXX.md`）。
+   该脚本会解压 zip 包到 `data/raw_dataset/`（含 `questions/` 和 `raw/`）。
+3. **Markdown 解析产物**：`data/merged_md/` 由赛题方通过 MinerU 预先提供，无需本地生成。
 
-解析后的 Markdown 文件按 `{domain}/{doc_id}/page_XXXX.md` 组织，`doc_id` 与题目 JSON 中的 `doc_ids` 一一对应。
+`merged_md/` 下每个文档是一个完整的 `{doc_id}.md` 文件，`doc_id` 与题目 JSON 中的 `doc_ids` 一一对应。
 
 ## 题目格式
 
@@ -71,11 +72,11 @@ data/
 
 - **split**: 当前均为 A 组
 - **answer_format**: `mcq`（单选）、`multi`（多选）、`tf`（判断）
-- **doc_ids**: 引用的文档编号，对应 `processed_pymupdf4llm/` 下的子目录名
+- **doc_ids**: 引用的文档编号，对应 `merged_md/{domain}/` 下的文件名（去后缀）
 - **注意**: 题目文件中**不含标准答案**
 
 ## 维护约束
 
 1. `data/` 整体 gitignore，不进入版本控制
 2. 题目文件由赛方提供，不要手动修改
-3. 解析产物通过 `src/preprocess/prepare_data.py` 生成，不要手动编辑
+3. `data/merged_md/` 由赛题方通过 MinerU 提供，不要手动编辑
