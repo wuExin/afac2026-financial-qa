@@ -382,6 +382,12 @@ class BM25Retriever:
             for item in limited
         ]
 
+        sorted_scores = sorted(
+            (item["score"] for item in limited), reverse=True
+        )
+        top1_score = sorted_scores[0] if sorted_scores else 0.0
+        top2_score = sorted_scores[1] if len(sorted_scores) >= 2 else 0.0
+
         stats = {
             "retrieval_method": "bm25_window",
             "query_count": len(queries),
@@ -394,6 +400,8 @@ class BM25Retriever:
             "avg_bm25_score": (
                 sum(item["score"] for item in limited) / len(limited) if limited else 0.0
             ),
+            "top1_score": top1_score,
+            "top2_score": top2_score,
             "selected_sources": selected_sources,
             "retrieval_doc_stats": {
                 doc_id: {
@@ -426,6 +434,8 @@ class BM25Retriever:
             "doc_coverage": 0,
             "max_bm25_score": 0.0,
             "avg_bm25_score": 0.0,
+            "top1_score": 0.0,
+            "top2_score": 0.0,
             "selected_sources": [],
             "retrieval_doc_stats": {},
         }
