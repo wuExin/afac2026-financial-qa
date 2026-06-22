@@ -5,6 +5,9 @@ data/*
 # 输出
 output/
 
+# 本地隔离 worktree
+.worktrees/
+
 # 检索日志（运行时产物，每次跑覆盖）
 logs/
 
