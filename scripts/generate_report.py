@@ -37,7 +37,7 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: #222;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -111,17 +111,17 @@ body {
 }
 .detail-header h2 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 18px;
 }
 .detail-header .meta-line {
-  font-size: 11px;
+  font-size: 12px;
   color: #666;
   margin-bottom: 6px;
 }
 .detail-header .question-text {
-  font-size: 12px;
+  font-size: 14px;
   margin: 6px 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 .query-chips, .option-chips {
   display: flex;
@@ -130,8 +130,8 @@ body {
   margin-top: 4px;
 }
 .chip {
-  font-size: 10px;
-  padding: 1px 6px;
+  font-size: 12px;
+  padding: 2px 8px;
   border-radius: 8px;
   background: #eee;
 }
@@ -172,20 +172,20 @@ body {
 .chunk-head .score.mid { color: var(--yellow); }
 .chunk-head .score.low { color: var(--red); }
 .chunk-meta {
-  font-size: 10px;
+  font-size: 12px;
   color: #888;
   margin-bottom: 4px;
 }
 .chunk-text {
   font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  font-size: 11px;
+  font-size: 14px;
   white-space: pre-wrap;
   word-break: break-word;
   background: #fafafa;
-  padding: 6px;
+  padding: 8px;
   border-radius: 3px;
   margin: 4px 0 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 .empty {
   padding: 40px;
@@ -269,6 +269,17 @@ function renderDetail(r) {
   const queries = r.queries || [];
   const options = r.options || [];
 
+  const queryChip = q => {
+    if (typeof q === 'string') {
+      return `<span class="chip">${escapeHtml(q)}</span>`;
+    }
+    const qt = (q && q.query_type) || 'unknown';
+    const n = (q && q.tokens && q.tokens.length) || 0;
+    const cls = qt.startsWith('option') ? 'option' :
+                qt === 'domain_terms' ? 'domain' : '';
+    return `<span class="chip ${cls}" title="${escapeHtml((q.tokens||[]).join(' / '))}">${escapeHtml(qt)} · ${n} tok</span>`;
+  };
+
   let html = `<div class="detail-header">
     <h2>${escapeHtml(r.qid)}</h2>
     <div class="meta-line">
@@ -280,7 +291,7 @@ function renderDetail(r) {
     </div>
     <div class="question-text"><strong>题目：</strong>${escapeHtml(r.question_text || '')}</div>
     <div class="query-chips">
-      ${queries.map(q => `<span class="chip">${escapeHtml(q)}</span>`).join('')}
+      ${queries.map(queryChip).join('')}
     </div>
     ${options.length ? `<div class="option-chips">
       ${options.map(o => `<span class="chip option">${escapeHtml(o)}</span>`).join('')}
