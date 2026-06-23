@@ -11,6 +11,7 @@ Baseline 策略：
 import os
 import math
 import re
+import json
 from collections import Counter, defaultdict
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
@@ -84,6 +85,14 @@ class ContextManager:
         if len(text) <= self.max_chars:
             return text
         return text[: self.max_chars] + "\n\n[文档内容已截断]"
+
+
+def _option_values(options) -> List[str]:
+    if isinstance(options, dict):
+        return [str(v) for v in options.values()]
+    if isinstance(options, list):
+        return [str(v) for v in options]
+    return []
 
 
 class RollingWindowRetriever:
@@ -267,6 +276,139 @@ class RollingWindowRetriever:
         return unique[:120]
 
 
+DEFAULT_INTENT_TERMS = {
+    "financial_reports": {
+        "financial_compare": ["主要会计数据", "财务指标", "营业收入", "营业总收入", "净利润", "归母净利润", "归属于上市公司股东的净利润", "同比", "增长率"],
+        "cashflow": ["现金流量表", "经营活动产生的现金流量净额", "经营现金流", "现金流量净额"],
+        "rd": ["研发投入", "研发费用", "研发投入占营业收入比例", "研发投入金额", "研发人员"],
+        "dividend": ["利润分配", "利润分配方案", "现金分红", "分红比例", "每股现金分红", "末期股息", "股东回报", "股份回购", "回购金额"],
+        "scale": ["总资产", "净资产", "企业规模", "资产总额"],
+    },
+    "financial_contracts": {
+        "issuance": ["发行人", "发行主体", "发行规模", "发行金额", "注册金额", "主体信用评级", "债项评级", "信用评级", "主承销商", "受托管理人", "中介机构"],
+        "clause": ["违约责任", "违约赔偿", "赎回条款", "回售条款", "保护性条款", "债券持有人", "信息披露", "募集资金用途"],
+        "convertible": ["可转换公司债券", "可转债", "转股价格", "初始转股价格", "转股价格向下修正", "有条件赎回", "有条件回售"],
+        "security_info": ["股票代码", "证券代码", "股票简称", "证券简称", "发行日期", "公告日期"],
+        "financial_data": ["资产负债率", "财务指标", "利润总额", "净利润", "董事及高级管理人员", "真实性"],
+    },
+    "insurance": {
+        "claim": ["保险责任", "赔付比例", "保险金额", "身故保险金", "赔偿处理", "赔偿上限", "责任范围"],
+        "waiting_period": ["等待期", "意外伤害", "非意外"],
+        "surrender": ["现金价值", "退保", "退保费用", "账户价值", "保单账户价值", "已交保费", "犹豫期"],
+        "medical": ["免赔额", "免赔率", "医保报销", "自费", "医疗费用", "住院", "门诊", "特定药品费用"],
+        "policy_status": ["宽限期", "效力中止", "复效", "保单贷款"],
+        "annuity": ["养老年金", "领取日", "开始领取日", "变更"],
+        "exclusion": ["责任免除", "免责", "故意自伤", "自杀", "除外"],
+        "property_auto": ["车上人员责任险", "施救费用", "特种车", "家庭财产", "水管爆裂"],
+    },
+    "regulatory": {
+        "deadline": ["报告期限", "工作日", "自然日", "施行日期", "实施日期", "自发布之日起施行", "过渡期"],
+        "aml": ["反洗钱", "客户尽职调查", "客户身份资料", "交易记录保存", "受益所有人", "高风险", "非自然人客户"],
+        "payment_clearing": ["非银行支付机构", "银行卡清算机构", "收费标准", "董事", "监事", "高级管理人员", "变更报告"],
+        "data_security": ["数据安全", "敏感数据", "照片", "终端设备", "统一规范管理"],
+        "listed_company": ["上市公司", "公司治理", "治理准则", "章程指引", "股东大会", "股东会", "董事会", "董事候选人"],
+        "disclosure_report": ["定期报告", "半年度报告", "年度报告", "信息披露", "利润分配", "现金分红"],
+        "enforcement": ["行政处罚", "市场禁入", "分类监管", "分类评价", "证券公司", "审计机构", "法律责任"],
+        "obligation": ["应当", "不得", "金融机构", "监管部门", "内部审批", "金额门槛"],
+    },
+    "research": {
+        "market": ["市场规模", "行业规模", "同比", "复合增速", "复合增长率", "渗透率", "市占率", "市场份额", "预测"],
+        "bank_insurance": ["银保渠道", "银行 IT", "金融信创", "ICT", "金融机构配置", "上市险企", "保险行业"],
+        "technology": ["光通信", "数据中心", "半导体", "芯片", "IP 授权", "网络安全", "安全运营", "检测规则", "解析规则"],
+        "consumption": ["服务消费", "居民收入", "宠物医疗", "消费趋势"],
+        "brokerage_fund": ["上市券商", "客户资金杠杆", "自有资产净利率", "基金份额", "主动型", "新成立基金"],
+        "ev_chemical": ["电动车", "新能源渗透率", "宁德时代", "碳酸锂", "锂电", "PE 估值", "大宗商品", "油价", "化工品"],
+        "company": ["营收", "净利润", "出货量", "销量", "财务表现"],
+    },
+}
+
+
+def _flatten_intent_terms(domain_terms: Dict[str, List[str]]) -> List[str]:
+    terms = []
+    seen = set()
+    for bucket_terms in domain_terms.values():
+        for term in bucket_terms:
+            if term in seen:
+                continue
+            seen.add(term)
+            terms.append(term)
+    return terms
+
+
+class IntentTermSelector:
+    """让 LLM 从白名单意图词里挑选 BM25 追加查询词。"""
+
+    def __init__(self, enabled: bool = False, max_terms: int = 8):
+        self.enabled = enabled
+        self.max_terms = max(0, int(max_terms))
+        self.last_usage = None
+
+    def select(self, question: Dict, llm, intent_terms: Dict[str, Dict[str, List[str]]]) -> List[str]:
+        if not self.enabled or self.max_terms <= 0:
+            return []
+
+        domain = question.get("domain", "")
+        domain_terms = intent_terms.get(domain, {})
+        candidates = _flatten_intent_terms(domain_terms)
+        if not candidates:
+            return []
+
+        prompt = self._build_prompt(question, domain_terms)
+        try:
+            response = llm.chat(
+                [{"role": "user", "content": prompt}],
+                max_tokens=512,
+                temperature=0.0,
+            )
+            self.last_usage = getattr(response, "usage", None)
+        except Exception as exc:
+            print(f"  [intent_terms_failed] {exc}")
+            self.last_usage = None
+            return []
+
+        return self._parse_terms(response.content, candidates)
+
+    def _build_prompt(self, question: Dict, domain_terms: Dict[str, List[str]]) -> str:
+        options_text = "\n".join(_option_values(question.get("options", {})))
+        candidate_lines = []
+        for name, terms in domain_terms.items():
+            candidate_lines.append(f"{name}: " + "、".join(terms))
+
+        return (
+            "你是金融问答检索意图分析器。请根据题目和选项，从候选意图词白名单中选择需要追加到 BM25 查询的关键词。\n"
+            "只允许选择候选词中的原词，不要创造新词。若题目本身已经足够明确，也可以少选。\n"
+            f"最多选择 {self.max_terms} 个，按重要性排序。\n"
+            "输出必须是 JSON，格式为 {\"terms\": [\"关键词1\", \"关键词2\"]}。\n\n"
+            f"题目：{question.get('question', '')}\n\n"
+            f"选项：\n{options_text}\n\n"
+            "候选意图词：\n" + "\n".join(candidate_lines)
+        )
+
+    def _parse_terms(self, raw: str, candidates: List[str]) -> List[str]:
+        candidate_set = set(candidates)
+        parsed_terms = []
+        try:
+            payload = json.loads((raw or "").strip())
+            if isinstance(payload, dict):
+                parsed_terms = payload.get("terms", [])
+            elif isinstance(payload, list):
+                parsed_terms = payload
+        except json.JSONDecodeError:
+            parsed_terms = [term for term in candidates if term in (raw or "")]
+
+        selected = []
+        seen = set()
+        for term in parsed_terms:
+            term = str(term).strip()
+            if term not in candidate_set or term in seen:
+                continue
+            seen.add(term)
+            selected.append(term)
+            if len(selected) >= self.max_terms:
+                break
+        return selected
+
+
 class BM25Retriever:
     """BM25 粗召回 + 窗口扩展 + 去重合并 + 跨文档配额。"""
 
@@ -279,12 +421,10 @@ class BM25Retriever:
         "均为", "均有", "均未", "不是", "属于", "包括", "以及", "或者",
     }
 
+    INTENT_TERMS = DEFAULT_INTENT_TERMS
     DOMAIN_TERMS = {
-        "insurance": ["等待期", "免赔额", "保险责任", "责任免除", "现金价值", "退保费用", "身故保险金"],
-        "financial_reports": ["营业收入", "净利润", "归母净利润", "经营现金流", "研发投入", "毛利率"],
-        "financial_contracts": ["发行人", "发行规模", "票面利率", "担保", "评级", "承销商", "募集资金用途"],
-        "regulatory": ["应当", "不得", "客户尽职调查", "受益所有人", "保存期限", "反洗钱"],
-        "research": ["行业规模", "同比", "渗透率", "市场份额", "产量", "销量"],
+        domain: _flatten_intent_terms(domain_terms)
+        for domain, domain_terms in DEFAULT_INTENT_TERMS.items()
     }
 
     def __init__(self, config: Optional[Dict] = None):
@@ -477,25 +617,34 @@ class BM25Retriever:
     def _build_queries(self, question: Dict) -> List[Dict]:
         q_text = question.get("question", "")
         options = question.get("options", {})
+        option_values = _option_values(options)
         answer_format = question.get("answer_format", "mcq")
         domain = question.get("domain", "")
 
         query_specs = []
-        if answer_format == "multi":
+        if answer_format == "multi" and isinstance(options, dict):
             for key, value in sorted(options.items()):
                 query_specs.append((f"option_{key}", f"{q_text}\n{value}"))
         else:
-            merged_options = "\n".join(str(v) for v in options.values())
+            merged_options = "\n".join(option_values)
             query_specs.append(("question_options", f"{q_text}\n{merged_options}"))
 
-        numeric_text = " ".join(self.WORD_RE.findall(f"{q_text}\n" + "\n".join(map(str, options.values()))))
+        full_text = f"{q_text}\n" + "\n".join(option_values)
+        numeric_text = " ".join(self.WORD_RE.findall(full_text))
         if numeric_text:
             query_specs.append(("numbers", numeric_text))
 
         for term in self.DOMAIN_TERMS.get(domain, []):
-            full_text = f"{q_text}\n" + "\n".join(map(str, options.values()))
             if term in full_text:
                 query_specs.append(("domain_terms", term))
+
+        selected_intent_terms = [
+            str(term).strip()
+            for term in question.get("_intent_terms", [])
+            if str(term).strip()
+        ]
+        if selected_intent_terms:
+            query_specs.append(("intent_terms", "\n".join(selected_intent_terms)))
 
         queries = []
         for query_type, text in query_specs:
@@ -900,6 +1049,48 @@ def _parse_reflection_decision(
 class FinancialQAAgent:
     """金融长文本问答 Agent（Baseline No-Tool 版）"""
 
+    @staticmethod
+    def _resolve_api_key(base_url: str, model: str) -> Optional[str]:
+        is_qwen_endpoint = "dashscope.aliyuncs.com" in base_url or model.lower().startswith("qwen")
+        api_key = (
+            os.getenv("DASHSCOPE_API_KEY")
+            if is_qwen_endpoint
+            else (os.getenv("LLM_API_KEY") or os.getenv("GLM_API_KEY"))
+        )
+        if not api_key and not is_qwen_endpoint:
+            api_key = os.getenv("DASHSCOPE_API_KEY")
+        return api_key
+
+    @classmethod
+    def _create_llm_client(cls, model_cfg: Dict, fallback_env: str = "FALLBACK_MODEL_NAME"):
+        base_url = os.getenv(
+            "API_BASE_URL",
+            model_cfg.get("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        )
+        model = os.getenv("MODEL_NAME", model_cfg.get("name", "qwen-plus"))
+        return LLMClient(
+            api_key=cls._resolve_api_key(base_url, model),
+            base_url=base_url,
+            model=model,
+            temperature=model_cfg.get("temperature", 0.0),
+            fallback_model=os.getenv(fallback_env, model_cfg.get("fallback_name", "")),
+        )
+
+    @classmethod
+    def _create_intent_llm_client(cls, intent_cfg: Dict, default_llm):
+        model = intent_cfg.get("model")
+        if not model:
+            return default_llm
+
+        base_url = intent_cfg.get("api_base", "https://open.bigmodel.cn/api/paas/v4")
+        return LLMClient(
+            api_key=cls._resolve_api_key(base_url, model),
+            base_url=base_url,
+            model=model,
+            temperature=intent_cfg.get("temperature", 0.0),
+            fallback_model=intent_cfg.get("fallback_name", ""),
+        )
+
     def __init__(self, config: Optional[Dict] = None):
         self.config = config or load_config()
         self.context_manager = ContextManager(
@@ -913,6 +1104,11 @@ class FinancialQAAgent:
             self.retriever = RollingWindowRetriever(retrieval_cfg)
         else:
             self.retriever = BM25Retriever(retrieval_cfg)
+        intent_cfg = retrieval_cfg.get("intent_terms", {}) or {}
+        self.intent_selector = IntentTermSelector(
+            enabled=bool(intent_cfg.get("enabled", False)),
+            max_terms=int(intent_cfg.get("max_terms", 8)),
+        )
         self.prompt_builder = PromptBuilder()
         self.reflection_prompt_builder = ReflectionPromptBuilder()
         reflection_cfg = self.config.get("reflection", {}) or {}
@@ -926,23 +1122,8 @@ class FinancialQAAgent:
         self.memory = MemoryState()
 
         model_cfg = self.config.get("model", {})
-        base_url = os.getenv("API_BASE_URL", model_cfg.get("api_base", "https://dashscope.aliyuncs.com/compatible-mode/v1"))
-        model = os.getenv("MODEL_NAME", model_cfg.get("name", "qwen-plus"))
-        is_qwen_endpoint = "dashscope.aliyuncs.com" in base_url or model.lower().startswith("qwen")
-        api_key = (
-            os.getenv("DASHSCOPE_API_KEY")
-            if is_qwen_endpoint
-            else (os.getenv("LLM_API_KEY") or os.getenv("GLM_API_KEY"))
-        )
-        if not api_key and not is_qwen_endpoint:
-            api_key = os.getenv("DASHSCOPE_API_KEY")
-        self.llm = LLMClient(
-            api_key=api_key,
-            base_url=base_url,
-            model=model,
-            temperature=model_cfg.get("temperature", 0.0),
-            fallback_model=os.getenv("FALLBACK_MODEL_NAME", model_cfg.get("fallback_name", "")),
-        )
+        self.llm = self._create_llm_client(model_cfg)
+        self.intent_llm = self._create_intent_llm_client(intent_cfg, self.llm)
 
     def _read_document(self, domain: str, doc_id: str) -> str:
         """读取已解析的文档内容，尝试多个数据路径"""
@@ -1041,6 +1222,35 @@ class FinancialQAAgent:
             )
         return evidence
 
+    def _retrieve_evidence_with_intent_terms(
+        self,
+        question: Dict,
+        evidence: List[Evidence],
+    ) -> Tuple[Dict, List[Evidence], Dict]:
+        active_question = dict(question)
+        intent_terms = []
+        intent_selector = getattr(self, "intent_selector", IntentTermSelector(enabled=False))
+        if isinstance(self.retriever, BM25Retriever) or not isinstance(intent_selector, IntentTermSelector):
+            intent_terms = intent_selector.select(
+                active_question,
+                getattr(self, "intent_llm", self.llm),
+                BM25Retriever.INTENT_TERMS,
+            )
+            if intent_terms:
+                active_question["_intent_terms"] = intent_terms
+
+        retrieved_evidence, retrieval_stats = self.retriever.retrieve(active_question, evidence)
+        retrieval_stats = dict(retrieval_stats)
+        retrieval_stats["intent_terms"] = intent_terms
+        retrieval_stats["intent_term_count"] = len(intent_terms)
+
+        usage = getattr(intent_selector, "last_usage", None)
+        if usage:
+            retrieval_stats["intent_prompt_tokens"] = getattr(usage, "prompt_tokens", 0)
+            retrieval_stats["intent_completion_tokens"] = getattr(usage, "completion_tokens", 0)
+            retrieval_stats["intent_total_tokens"] = getattr(usage, "total_tokens", 0)
+        return active_question, retrieved_evidence, retrieval_stats
+
     def answer_question(
         self,
         question: Dict,
@@ -1048,6 +1258,7 @@ class FinancialQAAgent:
         """回答单个问题，返回 (答案, 证据, Token 统计)"""
         # 1. 加载证据
         evidence = self._load_evidence(question)
+        active_question = question
         retrieval_stats = {
             "retrieval_method": "head_truncate",
             "query_count": 0,
@@ -1060,9 +1271,14 @@ class FinancialQAAgent:
             "avg_bm25_score": 0.0,
             "selected_sources": [],
             "retrieval_doc_stats": {},
+            "intent_terms": [],
+            "intent_term_count": 0,
         }
         if self.retrieval_enabled:
-            evidence, retrieval_stats = self.retriever.retrieve(question, evidence)
+            active_question, evidence, retrieval_stats = self._retrieve_evidence_with_intent_terms(
+                question,
+                evidence,
+            )
 
         local_context = ContextManager(
             max_chars=self.context_manager.max_chars,
@@ -1070,7 +1286,7 @@ class FinancialQAAgent:
         )
 
         # 2. 构建 prompt
-        prompt = self.prompt_builder.build_prompt(question, evidence, local_context)
+        prompt = self.prompt_builder.build_prompt(active_question, evidence, local_context)
         prompt = local_context.truncate(prompt)
 
         # 3. 调用 LLM（带重试），直接输出文本答案
@@ -1087,21 +1303,21 @@ class FinancialQAAgent:
             retry_count += 1
             old_max = local_context.max_doc_chars
             local_context.max_doc_chars = max(1000, old_max // 2)
-            prompt = self.prompt_builder.build_prompt(question, evidence, local_context)
+            prompt = self.prompt_builder.build_prompt(active_question, evidence, local_context)
             prompt = local_context.truncate(prompt)
             response = self.llm.chat([{"role": "user", "content": prompt}], max_tokens=4096)
             local_context.max_doc_chars = old_max
 
         # 4. 从内容中提取答案
-        first_answer = self._parse_answer(response, question.get("answer_format", "mcq"))
+        first_answer = self._parse_answer(response, active_question.get("answer_format", "mcq"))
         answer = first_answer
 
         reflected = False
         reflection_decision = ""
         reflection_trigger_reason = ""
-        total_prompt = response.usage.prompt_tokens
-        total_completion = response.usage.completion_tokens
-        total_tokens = response.usage.total_tokens
+        total_prompt = response.usage.prompt_tokens + retrieval_stats.get("intent_prompt_tokens", 0)
+        total_completion = response.usage.completion_tokens + retrieval_stats.get("intent_completion_tokens", 0)
+        total_tokens = response.usage.total_tokens + retrieval_stats.get("intent_total_tokens", 0)
 
         # 5. 反思环节：BM25 低置信度时让 LLM 自评修正
         if self.reflection_enabled:
@@ -1110,7 +1326,7 @@ class FinancialQAAgent:
             if triggered:
                 try:
                     reflect_prompt = self.reflection_prompt_builder.build_prompt(
-                        question, evidence, first_answer, local_context,
+                        active_question, evidence, first_answer, local_context,
                     )
                     reflect_prompt = local_context.truncate(reflect_prompt)
                     reflect_response = self.llm.chat(
@@ -1118,7 +1334,7 @@ class FinancialQAAgent:
                     )
                     decision, parsed_answer = _parse_reflection_decision(
                         reflect_response.content, first_answer,
-                        question.get("answer_format", "mcq"),
+                        active_question.get("answer_format", "mcq"),
                     )
                     reflected = True
                     reflection_decision = decision

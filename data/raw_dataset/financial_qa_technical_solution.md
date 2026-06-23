@@ -311,6 +311,19 @@ doc_ids=["annual_byd_2024_report","annual_byd_2025_report"]
   -> BM25 _build_queries() 加入 intent_terms query
 ```
 
+当前代码落地位置：
+
+- `src/agent/agent.py::IntentTermSelector`：负责构造 prompt、调用 LLM、解析 JSON，并用白名单过滤输出。
+- `src/agent/agent.py::FinancialQAAgent._retrieve_evidence_with_intent_terms()`：在加载文档后、BM25 检索前写入 `question["_intent_terms"]`。
+- `src/agent/agent.py::BM25Retriever._build_queries()`：读取 `question["_intent_terms"]`，追加 `intent_terms` 查询。
+- `config/config.yaml::retrieval.intent_terms`：控制是否启用该步骤、最多选择多少词，以及是否使用独立轻量模型。
+
+当前默认模型配置：
+
+- 主答题模型：`glm-4.7`，走 Coding Plan 专用端点 `https://open.bigmodel.cn/api/coding/paas/v4`。
+- 意图词选择模型：`glm-4.7-flash`，同样走 Coding Plan 专用端点；只负责从白名单中选词，不参与最终答题。
+- 如果 `retrieval.intent_terms.model` 为空，意图词选择会复用主答题 LLM。
+
 候选词表示例：
 
 ```python

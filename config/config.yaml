@@ -2,8 +2,8 @@
 
 # 模型配置（智谱 GLM；正式提交赛题时切回 Qwen 系列）
 model:
-  name: "glm-5.1"
-  api_base: "https://open.bigmodel.cn/api/anthropic"
+  name: "glm-4.7"
+  api_base: "https://open.bigmodel.cn/api/coding/paas/v4"
   fallback_name: ""  # 默认禁用 fallback，避免测试模型和提交模型混用
   max_tokens: 4096
   temperature: 0.0
@@ -13,7 +13,7 @@ model:
 data:
   dataset_dir: "data/raw_dataset"
   raw_dir: "data/raw_dataset/raw"
-  questions_dir: "data/raw_dataset/questions/group_a"
+  questions_dir: "data/merged_md/questions/group_a"
   markdown_dir: "data/merged_md"
   output_dir: "output"
 
@@ -55,6 +55,14 @@ retrieval:
   max_doc_chars: 45000
   min_score: 0.1
   max_query_terms: 120
+
+  # LLM 意图词选择：在 BM25 前从领域白名单中挑选少量关键词追加检索。
+  intent_terms:
+    enabled: true
+    max_terms: 8
+    model: "glm-4.7-flash"
+    api_base: "https://open.bigmodel.cn/api/coding/paas/v4"
+    temperature: 0.0
 
   # 旧版 keyword_window 回退参数。
   window_chars: 3000
