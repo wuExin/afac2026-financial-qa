@@ -3,14 +3,28 @@
 <head>
 <meta charset="utf-8" />
 <style>
-  html, body { margin: 0; height: 100%; }
-  #pdf { height: 88vh; overflow: auto; border: 1px solid #ddd; padding: 12px; box-sizing: border-box; background: #f5f5f5; }
-  #pdf canvas { display: block; margin: 0 auto 8px; max-width: 100%; box-shadow: 0 0 3px rgba(0,0,0,.3); }
+  html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
+  #pdf {
+    flex: 1; min-height: 0; overflow: auto;
+    border: 1px solid #ddd; padding: 12px; box-sizing: border-box; background: #f5f5f5;
+  }
+  .page {
+    position: relative; margin: 0 auto 8px;
+    box-shadow: 0 0 3px rgba(0,0,0,.3); background: #fff;
+  }
+  .page canvas { display: block; }
+  .textLayer {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    overflow: hidden; line-height: 1;
+  }
+  .textLayer span {
+    position: absolute; white-space: pre; color: transparent; transform-origin: 0 0;
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
-<div id="pdf"></div>
+<div id="pdf" data-search-root data-search-label="PDF"></div>
 <script>
   const PDF_B64 = "{{PDF_B64}}";
   pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -29,13 +43,27 @@
     for (let n = 1; n <= pdf.numPages; n++) {
       const page = await pdf.getPage(n);
       const viewport = page.getViewport({ scale: 1.4 });
+      const pageDiv = document.createElement("div");
+      pageDiv.className = "page";
+      pageDiv.style.width = viewport.width + "px";
+      pageDiv.style.height = viewport.height + "px";
       const canvas = document.createElement("canvas");
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      pdfEl.appendChild(canvas);
+      pageDiv.appendChild(canvas);
+      pdfEl.appendChild(pageDiv);
       await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+      const textContent = await page.getTextContent();
+      const textLayerDiv = document.createElement("div");
+      textLayerDiv.className = "textLayer";
+      pageDiv.appendChild(textLayerDiv);
+      await pdfjsLib.renderTextLayer({
+        textContent, container: textLayerDiv, viewport, textDivs: [],
+      }).promise;
     }
+    document.dispatchEvent(new Event("searchcontentready"));
   });
 </script>
+<script>{{SEARCH_JS}}</script>
 </body>
 </html>

@@ -85,3 +85,11 @@ def test_build_md_html_substitutes():
     assert out == "md=<p>hi</p> js=ENGINE"
     assert "{{MD_HTML}}" not in out
     assert "{{SEARCH_JS}}" not in out
+
+
+def test_load_pdf_template_has_search_and_textlayer():
+    tpl = load_pdf_template()
+    assert "{{SEARCH_JS}}" in tpl
+    assert "data-search-root" in tpl
+    assert "renderTextLayer" in tpl
+    assert "searchcontentready" in tpl
