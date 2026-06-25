@@ -29,3 +29,21 @@ def test_pdf_to_base64_roundtrip():
 def test_is_pdf_too_large_threshold():
     assert is_pdf_too_large(b"x" * (PDF_INLINE_MAX_BYTES + 1)) is True
     assert is_pdf_too_large(b"x" * 10) is False
+
+
+from ui.render import build_compare_html, load_compare_template
+
+
+def test_load_compare_template_has_placeholders():
+    tpl = load_compare_template()
+    assert "{{MD_HTML}}" in tpl
+    assert "{{PDF_B64}}" in tpl
+    assert "pdf.js" in tpl or "pdfjs" in tpl
+
+
+def test_build_compare_html_substitutes():
+    tpl = "left={{MD_HTML}} pdf={{PDF_B64}}"
+    out = build_compare_html("<p>hi</p>", "QUJD", template=tpl)
+    assert out == "left=<p>hi</p> pdf=QUJD"
+    assert "{{MD_HTML}}" not in out
+    assert "{{PDF_B64}}" not in out

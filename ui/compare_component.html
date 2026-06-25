@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; height: 100%; }
+  #wrap { display: flex; height: 85vh; gap: 8px; }
+  #md, #pdf { flex: 1; overflow: auto; border: 1px solid #ddd; padding: 12px; box-sizing: border-box; }
+  #md { background: #fff; }
+  #pdf { background: #f5f5f5; }
+  #md img { max-width: 100%; }
+  #md table { border-collapse: collapse; }
+  #md td, #md th { border: 1px solid #ccc; padding: 4px; }
+  #pdf canvas { display: block; margin: 0 auto 8px; max-width: 100%; box-shadow: 0 0 3px rgba(0,0,0,.3); }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<div id="wrap">
+  <div id="md">{{MD_HTML}}</div>
+  <div id="pdf"></div>
+</div>
+<script>
+  const PDF_B64 = "{{PDF_B64}}";
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  function b64ToBytes(b64) {
+    const bin = atob(b64);
+    const len = bin.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  const mdEl = document.getElementById("md");
+  const pdfEl = document.getElementById("pdf");
+
+  pdfjsLib.getDocument({ data: b64ToBytes(PDF_B64) }).promise.then(async (pdf) => {
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const viewport = page.getViewport({ scale: 1.4 });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      pdfEl.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+    }
+  });
+
+  // 比例同步:markdown 驱动 PDF
+  let syncing = false;
+  mdEl.addEventListener("scroll", () => {
+    if (syncing) return;
+    syncing = true;
+    const denom = mdEl.scrollHeight - mdEl.clientHeight;
+    const ratio = denom > 0 ? mdEl.scrollTop / denom : 0;
+    pdfEl.scrollTop = ratio * (pdfEl.scrollHeight - pdfEl.clientHeight);
+    requestAnimationFrame(() => { syncing = false; });
+  });
+</script>
+</body>
+</html>
