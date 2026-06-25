@@ -3,9 +3,11 @@ import base64
 from ui.render import (
     PDF_INLINE_MAX_BYTES,
     build_compare_html,
+    build_md_html,
     build_pdf_html,
     is_pdf_too_large,
     load_compare_template,
+    load_md_template,
     load_pdf_template,
     load_search_js,
     md_to_html,
@@ -69,3 +71,17 @@ def test_load_search_js_nonempty_with_markers():
     assert "afac-search-engine" in js
     assert "searchcontentready" in js
     assert "data-search-root" in js
+
+
+def test_load_md_template_has_placeholders():
+    tpl = load_md_template()
+    assert "{{MD_HTML}}" in tpl
+    assert "{{SEARCH_JS}}" in tpl
+    assert "data-search-root" in tpl
+
+
+def test_build_md_html_substitutes():
+    out = build_md_html("<p>hi</p>", template="md={{MD_HTML}} js={{SEARCH_JS}}", search_js="ENGINE")
+    assert out == "md=<p>hi</p> js=ENGINE"
+    assert "{{MD_HTML}}" not in out
+    assert "{{SEARCH_JS}}" not in out
