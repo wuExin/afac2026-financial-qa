@@ -12,3 +12,7 @@ pymupdf4llm>=0.0.17  # PDF 转 Markdown
 
 # 以下依赖仅在 design-draft/ 实验代码中使用，baseline 运行不需要：
 # tiktoken, numpy, pandas, faiss-cpu, sentence-transformers, tqdm, jupyter
+
+# UI 解析质量检查工具(ui/ 下,baseline 运行不需要)
+streamlit>=1.30.0
+markdown>=3.5
