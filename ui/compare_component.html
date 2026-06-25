@@ -7,18 +7,24 @@
   #wrap { display: flex; height: 85vh; gap: 8px; }
   #md, #pdf { flex: 1; overflow: auto; border: 1px solid #ddd; padding: 12px; box-sizing: border-box; }
   #md { background: #fff; }
-  #pdf { background: #f5f5f5; }
+  #pdf { position: relative; background: #f5f5f5; }
   #md img { max-width: 100%; }
   #md table { border-collapse: collapse; }
   #md td, #md th { border: 1px solid #ccc; padding: 4px; }
   #pdf canvas { display: block; margin: 0 auto 8px; max-width: 100%; box-shadow: 0 0 3px rgba(0,0,0,.3); }
+  #pagebadge {
+    position: sticky; top: 0; float: right; z-index: 10;
+    background: rgba(33,33,33,.82); color: #fff; font: 12px/1.4 sans-serif;
+    padding: 3px 10px; border-radius: 12px; pointer-events: none;
+    margin-bottom: -24px;
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 <div id="wrap">
   <div id="md">{{MD_HTML}}</div>
-  <div id="pdf"></div>
+  <div id="pdf"><div id="pagebadge">第 - / - 页</div></div>
 </div>
 <script>
   const PDF_B64 = "{{PDF_B64}}";
@@ -33,11 +39,16 @@
     return bytes;
   }
 
-  const mdEl = document.getElementById("md");
   const pdfEl = document.getElementById("pdf");
+  const badgeEl = document.getElementById("pagebadge");
+
+  // canvas.offsetTop for each rendered page, in PDF pane scroll coordinates.
+  const pageTops = [];
+  let numPages = 0;
 
   pdfjsLib.getDocument({ data: b64ToBytes(PDF_B64) }).promise.then(async (pdf) => {
-    for (let n = 1; n <= pdf.numPages; n++) {
+    numPages = pdf.numPages;
+    for (let n = 1; n <= numPages; n++) {
       const page = await pdf.getPage(n);
       const viewport = page.getViewport({ scale: 1.4 });
       const canvas = document.createElement("canvas");
@@ -45,19 +56,31 @@
       canvas.height = viewport.height;
       pdfEl.appendChild(canvas);
       await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+      pageTops.push(canvas.offsetTop);
     }
+    updateBadge();
   });
 
-  // 比例同步:markdown 驱动 PDF
-  let syncing = false;
-  mdEl.addEventListener("scroll", () => {
-    if (syncing) return;
-    syncing = true;
-    const denom = mdEl.scrollHeight - mdEl.clientHeight;
-    const ratio = denom > 0 ? mdEl.scrollTop / denom : 0;
-    pdfEl.scrollTop = ratio * (pdfEl.scrollHeight - pdfEl.clientHeight);
-    requestAnimationFrame(() => { syncing = false; });
-  });
+  // 当前视口顶部所在的 PDF 页码(1-based)。无映射数据,按实际 canvas 位置判定。
+  function currentPage() {
+    if (!pageTops.length) return 0;
+    const top = pdfEl.scrollTop + pdfEl.clientHeight * 0.25; // 视口偏上一点作判定点
+    let page = 1;
+    for (let i = 0; i < pageTops.length; i++) {
+      if (pageTops[i] <= top) page = i + 1;
+      else break;
+    }
+    return page;
+  }
+
+  function updateBadge() {
+    if (!numPages) return;
+    badgeEl.textContent = "第 " + currentPage() + " / " + numPages + " 页";
+  }
+
+  // 两栏各自独立滚动,不做跟随同步(比例同步定位不准,已移除)。
+  // 仅在 PDF 栏滚动时刷新页码徽标。
+  pdfEl.addEventListener("scroll", updateBadge);
 </script>
 </body>
 </html>
