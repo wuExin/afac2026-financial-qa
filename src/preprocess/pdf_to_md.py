@@ -4,11 +4,11 @@ PDF 批量转 Markdown 脚本（基于 pymupdf4llm）
 
 用法示例：
     python -m src.preprocess.pdf_to_md \
-        --input-dir design-draft/data/raw_dataset/raw \
+        --input-dir data/pdf \
         --output-dir data/processed_pymupdf4llm \
         --workers 4
 
-输入目录结构（与 raw_dataset 一致）：
+输入目录结构（data/pdf）：
     input-dir/
     ├── insurance/
     │   ├── 1.pdf

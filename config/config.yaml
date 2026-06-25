@@ -10,9 +10,9 @@ model:
 
 # 数据路径
 data:
-  dataset_dir: "data/raw_dataset"
-  raw_dir: "data/raw_dataset/raw"
-  questions_dir: "data/raw_dataset/questions/group_a"
+  dataset_dir: "data"
+  raw_dir: "data/pdf"
+  questions_dir: "data/questions"
   processed_pymupdf4llm_dir: "data/processed_pymupdf4llm"
   output_dir: "output"
 

@@ -16,7 +16,7 @@ from src.agent.agent import FinancialQAAgent
 def load_questions(questions_dir: Path, split: str) -> list:
     """加载指定组别的所有题目"""
     questions = []
-    for domain_file in sorted(questions_dir.glob("*_questions.json")):
+    for domain_file in sorted(questions_dir.rglob("*_questions.json")):
         data = load_json(domain_file)
         for q in data:
             if q.get("split", "").upper() == split.upper():
