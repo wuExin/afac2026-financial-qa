@@ -22,6 +22,7 @@ def is_pdf_too_large(pdf_bytes: bytes, max_bytes: int = PDF_INLINE_MAX_BYTES) ->
 
 
 _TEMPLATE_PATH = Path(__file__).with_name("compare_component.html")
+_PDF_TEMPLATE_PATH = Path(__file__).with_name("pdf_component.html")
 
 
 def load_compare_template() -> str:
@@ -31,3 +32,12 @@ def load_compare_template() -> str:
 def build_compare_html(md_html: str, pdf_b64: str, template: str | None = None) -> str:
     tpl = template if template is not None else load_compare_template()
     return tpl.replace("{{MD_HTML}}", md_html).replace("{{PDF_B64}}", pdf_b64)
+
+
+def load_pdf_template() -> str:
+    return _PDF_TEMPLATE_PATH.read_text(encoding="utf-8")
+
+
+def build_pdf_html(pdf_b64: str, template: str | None = None) -> str:
+    tpl = template if template is not None else load_pdf_template()
+    return tpl.replace("{{PDF_B64}}", pdf_b64)

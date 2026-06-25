@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 from ui.data_index import DocEntry, md_path, pdf_path
 from ui.render import (
     build_compare_html,
+    build_pdf_html,
     is_pdf_too_large,
     md_to_html,
     pdf_to_base64,
@@ -25,20 +26,18 @@ def _read_pdf(data_root: Path, domain: str, doc_id: str) -> bytes:
     return pdf_path(data_root, domain, doc_id).read_bytes()
 
 
-def _pdf_iframe(pdf_bytes: bytes, height: int = _COMPONENT_HEIGHT) -> None:
-    b64 = pdf_to_base64(pdf_bytes)
-    components.html(
-        f'<iframe src="data:application/pdf;base64,{b64}" '
-        f'width="100%" height="{height}px" style="border:none;"></iframe>',
-        height=height + 10,
-    )
+def _pdf_pane(pdf_bytes: bytes, height: int = _COMPONENT_HEIGHT) -> None:
+    # Render via pdf.js (canvas), not a data: URI iframe — Chrome blocks
+    # navigating an iframe to a data:application/pdf URL.
+    html = build_pdf_html(pdf_to_base64(pdf_bytes))
+    components.html(html, height=height, scrolling=False)
 
 
 def render_pdf_only(data_root: Path, domain: str, entry: DocEntry) -> None:
     if not entry.has_pdf:
         st.warning("该文档缺少 PDF")
         return
-    _pdf_iframe(_read_pdf(data_root, domain, entry.doc_id))
+    _pdf_pane(_read_pdf(data_root, domain, entry.doc_id))
 
 
 def render_md_only(data_root: Path, domain: str, entry: DocEntry) -> None:
@@ -61,7 +60,7 @@ def render_split(data_root: Path, domain: str, entry: DocEntry) -> None:
         return
     pdf_bytes = _read_pdf(data_root, domain, entry.doc_id)
     if is_pdf_too_large(pdf_bytes):
-        st.info("PDF 超过 8MB,降级为原生预览(不同步滚动)")
+        st.info("PDF 超过 8MB,降级为并排显示(不同步滚动)")
         col_md, col_pdf = st.columns(2)
         with col_md:
             st.markdown(
@@ -69,7 +68,7 @@ def render_split(data_root: Path, domain: str, entry: DocEntry) -> None:
                 unsafe_allow_html=True,
             )
         with col_pdf:
-            _pdf_iframe(pdf_bytes)
+            _pdf_pane(pdf_bytes)
         return
     md_html = md_to_html(_read_md(data_root, domain, entry.doc_id))
     html = build_compare_html(md_html, pdf_to_base64(pdf_bytes))

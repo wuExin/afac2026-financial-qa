@@ -3,8 +3,10 @@ import base64
 from ui.render import (
     PDF_INLINE_MAX_BYTES,
     build_compare_html,
+    build_pdf_html,
     is_pdf_too_large,
     load_compare_template,
+    load_pdf_template,
     md_to_html,
     pdf_to_base64,
 )
@@ -45,4 +47,17 @@ def test_build_compare_html_substitutes():
     out = build_compare_html("<p>hi</p>", "QUJD", template=tpl)
     assert out == "left=<p>hi</p> pdf=QUJD"
     assert "{{MD_HTML}}" not in out
+    assert "{{PDF_B64}}" not in out
+
+
+def test_load_pdf_template_has_placeholder():
+    tpl = load_pdf_template()
+    assert "{{PDF_B64}}" in tpl
+    assert "pdf.js" in tpl or "pdfjs" in tpl
+
+
+def test_build_pdf_html_substitutes():
+    tpl = "data={{PDF_B64}}"
+    out = build_pdf_html("QUJD", template=tpl)
+    assert out == "data=QUJD"
     assert "{{PDF_B64}}" not in out
