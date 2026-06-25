@@ -2,9 +2,11 @@ import base64
 
 from ui.render import (
     PDF_INLINE_MAX_BYTES,
+    build_compare_html,
+    is_pdf_too_large,
+    load_compare_template,
     md_to_html,
     pdf_to_base64,
-    is_pdf_too_large,
 )
 
 
@@ -29,9 +31,6 @@ def test_pdf_to_base64_roundtrip():
 def test_is_pdf_too_large_threshold():
     assert is_pdf_too_large(b"x" * (PDF_INLINE_MAX_BYTES + 1)) is True
     assert is_pdf_too_large(b"x" * 10) is False
-
-
-from ui.render import build_compare_html, load_compare_template
 
 
 def test_load_compare_template_has_placeholders():
