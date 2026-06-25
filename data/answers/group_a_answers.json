@@ -1,0 +1,2306 @@
+﻿[
+    {
+        "qid":  "fc_a_001",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "发行人：广东省广晟控股集团有限公司"
+                         },
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "本期债券发行金额：不超过10亿元"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行金额： 不超过 5 亿元"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "主体评级AA+/无债项评级"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "国信证券股份有限公司担任本期债券的债券受托管理人"
+                         }
+                     ],
+        "notes":  "A、B、D符合；text02主体评级为AA+，C不成立。"
+    },
+    {
+        "qid":  "fc_a_002",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "发行人主体信用等级为AAA"
+                         },
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "本期债券发行金额 不超过10亿元"
+                         },
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "本期债券无债项评级"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "本期发行金额 不超过(含)20亿元"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "主体评级:AAA;评级展望:稳定债项评级:AAA"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "成为全国首批规范类证券公司"
+                         }
+                     ],
+        "notes":  "A、B、D成立；C不成立，text01无债项评级且text14债项评级为AAA。"
+    },
+    {
+        "qid":  "fc_a_003",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "发行人承诺将及时、公平地履行信息披露义务。"
+                         },
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "发行人将及时、公平地履行信息披露义务。"
+                         }
+                     ],
+        "notes":  "两份文档均出现发行人及时、公平履行信息披露义务的条款。"
+    },
+    {
+        "qid":  "fc_a_004",
+        "answer":  "AC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "本期债券发行金额 不超过10亿元"
+                         },
+                         {
+                             "doc_id":  "text13",
+                             "quote":  "注册金额 3,000亿元人民币"
+                         },
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "净利润(亿元) 29.78、23.39、27.04"
+                         },
+                         {
+                             "doc_id":  "text13",
+                             "quote":  "五、净利润 388,060.95、330,404.29"
+                         },
+                         {
+                             "doc_id":  "text13",
+                             "quote":  "资产负债率分别为66.38%、65.54%和63.51%"
+                         }
+                     ],
+        "notes":  "A、C正确；B应为3000亿元；D含66.38%，不在63%至66%内。"
+    },
+    {
+        "qid":  "fc_a_005",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "发行人：广东省广晟控股集团有限公司"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "发行股份购买资产并募集配套资金"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "力诺投资的资产负债率为43.24%"
+                         }
+                     ],
+        "notes":  "A、B、D均有直接依据；C中第二份未表述为发行人合并口径资产负债率。"
+    },
+    {
+        "qid":  "fc_a_006",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text01",
+                             "quote":  "投资者有权选择将本期债券回售予本公司"
+                         },
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "本次可转债持有人享有一次以面值加上当期应计利息的价格向公司回售"
+                         }
+                     ],
+        "notes":  "两文档均提及回售/赎回等债券持有人权利安排。"
+    },
+    {
+        "qid":  "fc_a_007",
+        "answer":  "BD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行金额： 不超过 5 亿元"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行人的主体信用等级为AA+"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "以下事件构成本协议项下的违约事件"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "本期发行金额\u003c/td\u003e\u003ctd\u003e不超过(含)20亿元"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "主体评级:AAA;评级展望:稳定"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "以下事件构成各期债券项下的违约事件"
+                         }
+                     ],
+        "notes":  "B、D成立；A因text02为AA+不选，C因text02发行人为融资租赁公司不选。"
+    },
+    {
+        "qid":  "fc_a_008",
+        "answer":  "B",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "违约金具体计算方式为延迟支付的本金和利息×票面利率×150%"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行规模：本期债券总规模不超过5亿元"
+                         }
+                     ],
+        "notes":  "A、C与text02披露不符；B准确对应text03违约金公式。"
+    },
+    {
+        "qid":  "fc_a_009",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "信用评级结果：主体评级AA+"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行金额：不超过5亿元"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "违约事项及纠纷解决机制"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "力诺投资的资产负债率为43.24%"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "业绩预测补偿及减值补偿协议"
+                         }
+                     ],
+        "notes":  "A、B、D符合；C应为不超过5亿元。"
+    },
+    {
+        "qid":  "fc_a_010",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text06",
+                             "quote":  "（4）转股价格向下修正条款"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "未出现该特定术语"
+                         }
+                     ],
+        "notes":  "text06明确列出该条款；text02检索未命中该术语。"
+    },
+    {
+        "qid":  "fc_a_011",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行人： 深圳市融资租赁"
+                         },
+                         {
+                             "doc_id":  "text07",
+                             "quote":  "上市地:深圳证券交易所"
+                         },
+                         {
+                             "doc_id":  "text02",
+                             "quote":  "发行金额： 不超过 5 亿元"
+                         },
+                         {
+                             "doc_id":  "text07",
+                             "quote":  "出资组建合资公司重大资产重组报告书"
+                         }
+                     ],
+        "notes":  "A、B正确；C为5亿元非10亿元，D为重组报告书非债券募集说明书。"
+    },
+    {
+        "qid":  "fc_a_012",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "回售或赎回部分债券的兑付日为2031年4月23日"
+                         },
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "本金和利息×票面利率×150%×违约天数/365"
+                         },
+                         {
+                             "doc_id":  "text13",
+                             "quote":  "资产负债率分别为66.38%、65.54%和63.51%"
+                         }
+                     ],
+        "notes":  "A、C、D与原文一致；B中利润总额并非逐年下降。"
+    },
+    {
+        "qid":  "fc_a_013",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "董事、高级管理人员承诺本募集说明书不存在虚假记载"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "全体高级管理人员保证本报告书内容真实、准确、完整"
+                         },
+                         {
+                             "doc_id":  "text10",
+                             "quote":  "力诺投资的资产负债率为43.24%"
+                         }
+                     ],
+        "notes":  "两文档均有责任声明，text10披露了该负债率。"
+    },
+    {
+        "qid":  "fc_a_014",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "延迟支付的本金和利息×票面利率×150%"
+                         },
+                         {
+                             "doc_id":  "text08",
+                             "quote":  "减值测试报告出具之日起10日内"
+                         },
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "品种一的兑付日为2036年4月23日"
+                         }
+                     ],
+        "notes":  "A、B与原文一致；C忽略2036年主兑付日，D把乙方5日回复误作甲方通知期限。"
+    },
+    {
+        "qid":  "fc_a_015",
+        "answer":  "AB",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "发行人主体评级为AAA，评级展望稳定，本期债券评级为AAA"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "注册金额 不超过(含)180亿元"
+                         },
+                         {
+                             "doc_id":  "text03",
+                             "quote":  "违约金具体计算方式为延迟支付的本金和利息×票面利率×150%×违约天数/365"
+                         },
+                         {
+                             "doc_id":  "text14",
+                             "quote":  "主承销商/簿记管理人/债券受托管理人 国元证券股份有限公司"
+                         }
+                     ],
+        "notes":  "题目标为单选，但A、B均与原文一致；C应为150%而非200%，D主承销商为国元证券而非国信证券。因此该题无唯一正确单选。"
+    },
+    {
+        "qid":  "fc_a_016",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text09",
+                             "quote":  "初始转股价格为 19.59 元/股"
+                         },
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "（2）有条件赎回条款"
+                         },
+                         {
+                             "doc_id":  "text09",
+                             "quote":  "2、有条件赎回条款"
+                         },
+                         {
+                             "doc_id":  "text09",
+                             "quote":  "全部转股后公司资产负债率将下降至 26.99%"
+                         },
+                         {
+                             "doc_id":  "text09",
+                             "quote":  "名称 广发证券股份有限公司"
+                         }
+                     ],
+        "notes":  "A、C见text09；B两文均提及；D不符，text09保荐人为广发证券。"
+    },
+    {
+        "qid":  "fc_a_017",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "股票代码：300866"
+                         },
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "转股价格向下修正条款"
+                         },
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "有条件赎回条款"
+                         },
+                         {
+                             "doc_id":  "text05",
+                             "quote":  "股票代码\u003c/td\u003e\u003ctd\u003e300964.SZ"
+                         },
+                         {
+                             "doc_id":  "text05",
+                             "quote":  "转股价格向下修正条款"
+                         },
+                         {
+                             "doc_id":  "text05",
+                             "quote":  "有条件赎回条款"
+                         }
+                     ],
+        "notes":  "两文档均有向下修正及有条件赎回条款；股票代码不同；text04标注2025年6月，非均为2025年9月。"
+    },
+    {
+        "qid":  "fc_a_018",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "2025年6月"
+                         },
+                         {
+                             "doc_id":  "text06",
+                             "quote":  "公告日期：二〇二五年九月"
+                         }
+                     ],
+        "notes":  "第二份公告日期为2025年9月，晚于第一份2025年6月。"
+    },
+    {
+        "qid":  "fc_a_019",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "股票简称：安克创新；股票代码：300866"
+                         },
+                         {
+                             "doc_id":  "text07",
+                             "quote":  "证券代码:002320证券简称:海峡股份"
+                         },
+                         {
+                             "doc_id":  "text07",
+                             "quote":  "资产负债率(%)...5.70%...35.83%"
+                         }
+                     ],
+        "notes":  "A、B成立；C未见转股后资产负债率预测，D第二份简称为海峡股份。"
+    },
+    {
+        "qid":  "fc_a_020",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "text11",
+                             "quote":  "初始转股价格为18.26元/股"
+                         },
+                         {
+                             "doc_id":  "text04",
+                             "quote":  "股票简称：安克创新"
+                         },
+                         {
+                             "doc_id":  "text11",
+                             "quote":  "股票代码\u003c/td\u003e\u003ctd\u003e300996"
+                         },
+                         {
+                             "doc_id":  "text11",
+                             "quote":  "公告之日前二十个交易日公司A股"
+                         }
+                     ],
+        "notes":  "A、B正确；C代码应为300996；D应为公告日前均价及前一交易日均价。"
+    },
+    {
+        "qid":  "fin_a_001",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "营业收入803,964,958,000，同比增长3.46%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "净利润32,619,022,000，同比-18.97%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "现金流量净额59,135,544,000，同比-55.69%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "研发投入占比7.89%，2024年6.97%"
+                         }
+                     ],
+        "notes":  "A、B正确；C现金流净额下降，D研发投入占比上升。"
+    },
+    {
+        "qid":  "fin_a_002",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "营业收入...本年比上年增减...17.04%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "经营活动产生的现金流量净额...37.35%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "以2025年度...净利润的50%...现金分红"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "现金分红金额...25,372,340,791.99"
+                         }
+                     ],
+        "notes":  "2025营收和分红金额高于2024，经营现金流增加而非减少，且按净利润50%分红。"
+    },
+    {
+        "qid":  "fin_a_003",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_cscec_2025_report",
+                             "quote":  "净利润390.7亿元，同比下降15.4%"
+                         },
+                         {
+                             "doc_id":  "annual_cscec_2025_report",
+                             "quote":  "比例为28.75%"
+                         },
+                         {
+                             "doc_id":  "annual_cscec_2024_report",
+                             "quote":  "比例为24.29%"
+                         }
+                     ],
+        "notes":  "2025年净利润同比下降，分红比例28.75%高于2024年24.29%。"
+    },
+    {
+        "qid":  "fin_a_004",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "营业总收入4,091亿元，同比增长9.5%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "营业总收入4,585亿元，同比增长12%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "经营活动产生的现金流量净额53,345,930"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "研发费用占营业收入比例3.90%，2024年3.99%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "现金分红与股份回购之总金额超过当年度公司归母净利润"
+                         }
+                     ],
+        "notes":  "2025收入增速高于2024，经营现金流下降；研发占比下降非提升，分红回购总额超过归母净利润。"
+    },
+    {
+        "qid":  "fin_a_005",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "营业收入(元)777,102,455,000.00"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "研发投入占营业收入比例 6.97%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "净利润同比上升 34.00%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "营业收入(千元)407,149,600"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "研发投入占营业收入比例 3.99%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "净利润(千元)38,537,237，同比14.29%"
+                         }
+                     ],
+        "notes":  "比亚迪营收和研发强度均高于美的；美的经营现金流低于比亚迪；两者归母净利润均双位数增长。"
+    },
+    {
+        "qid":  "fin_a_006",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "营业收入777,102,455,000；现金流133,453,873,000"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "营业收入456,451,731；现金流53,345,930"
+                         }
+                     ],
+        "notes":  "比亚迪现金流低于营收一半；美的现金流高于营收十分之一。"
+    },
+    {
+        "qid":  "fin_a_007",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "研发投入占营业收入比例：2024年6.97%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "每10股派发现金分红69.57元（含税）"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "现金流量净额较上年上升37.35%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "现金流量净额同比变动-21.37%"
+                         }
+                     ],
+        "notes":  "A、B、D符合报告；C与比亚迪现金流同比下降不符。"
+    },
+    {
+        "qid":  "fin_a_008",
+        "answer":  "B",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "归属于上市公司股东的净利润的20%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "研发投入占营业收入比例\u003c/td\u003e\u003ctd\u003e6.97%"
+                         }
+                     ],
+        "notes":  "B符合宁德时代年度现金分红口径；其余选项金额或每股口径不符。"
+    },
+    {
+        "qid":  "fin_a_009",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "营业收入达到人民币10,502亿元"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "研发投入占营业收入比例6.97%"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "研发投入总额占营业收入比例3.6%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2024_report",
+                             "quote":  "经营活动产生的现金流量净额133,453,873"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "归属于母公司股东的净利润变化-0.9%"
+                         }
+                     ],
+        "notes":  "A、B、C正确；D为下降而非双位数增长。"
+    },
+    {
+        "qid":  "fin_a_010",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "研发投入占营业收入比例 7.89% 6.97%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "自 2019 年起公司连续四年推出回购计划"
+                         }
+                     ],
+        "notes":  "比亚迪研发投入占比同比上升，美的回购表述成立。"
+    },
+    {
+        "qid":  "fin_a_011",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "净利润约32619百万元，同比下降18.97%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "研发投入占营业收入比例7.89%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "归母净利润439.5亿元，双位数增长"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "每10股派发现金43元，经营现金流53345930"
+                         }
+                     ],
+        "notes":  "美的净利增速高于比亚迪，分红更高；比亚迪研发占比高于美的；两者经营现金流均为正。"
+    },
+    {
+        "qid":  "fin_a_012",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "净利润约人民币32,619百万元，同比下降18.97%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "经营活动产生的现金流量净额同比-55.69%"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "营业收入达到人民币10,502亿元"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "研发费用为293亿元，占营业收入比重为2.8%"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "经营活动现金流量净额同比下降26.2%"
+                         }
+                     ],
+        "notes":  "中国移动营收高于比亚迪；比亚迪归母净利润下降18.97%，超过15%；中国移动研发费用占比低于比亚迪；两者经营现金流均下降。"
+    },
+    {
+        "qid":  "fin_a_013",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "每10股派发现金分红45.53元"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "末期股息每10股人民币3.58元"
+                         }
+                     ],
+        "notes":  "宁德时代每股4.553元，高于比亚迪每股0.358元。"
+    },
+    {
+        "qid":  "fin_a_014",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "营业收入同比增减17.04%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "营业收入同比增减3.46%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "以净利润的50%实施现金分红"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "研发投入占营业收入比例7.89%"
+                         },
+                         {
+                             "doc_id":  "annual_byd_2025_report",
+                             "quote":  "经营活动现金流量净额-55.69%"
+                         }
+                     ],
+        "notes":  "宁德时代营收增速高于比亚迪且按净利润50%分红；比亚迪研发占比不低于5%，经营现金流未正增长。"
+    },
+    {
+        "qid":  "fin_a_015",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "年度现金分红:拟以2024年度公司合并报表归属于上市公司股东的净利润的20%"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "营业收入达到10,502亿元，同比增长0.9%"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "研发费用为293亿元，比上年增长 3.9%，占营业收入比重为 2.8%"
+                         }
+                     ],
+        "notes":  "A符合宁德时代年度现金分红口径；中国移动营收是增长0.9%，研发费占比2.8%，其余选项不符。"
+    },
+    {
+        "qid":  "fin_a_016",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "每10股派发现金分红45.53元（含税）"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "不实施资本公积金转增股本"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "每10股派发现金分红人民币38元（含税）"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "现金分红与股份回购之总金额超过当年度公司归母净利润"
+                         }
+                     ],
+        "notes":  "A、B、D符合披露；C错误，两家公司对应方案均未转增股本。"
+    },
+    {
+        "qid":  "fin_a_017",
+        "answer":  "AC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "较上年减少 292亿元，下降 198.69%"
+                         },
+                         {
+                             "doc_id":  "annual_cscec_2024_report",
+                             "quote":  "全年新签合同额4.5万亿元"
+                         },
+                         {
+                             "doc_id":  "annual_cscec_2024_report",
+                             "quote":  "现金分红占...净利润的比例为24.29%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2024_report",
+                             "quote":  "不实施资本公积金转增股本，不送红股"
+                         }
+                     ],
+        "notes":  "A、C符合披露；B把营业收入误作新签合同额，D与不送红股相反。"
+    },
+    {
+        "qid":  "fin_a_018",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "营业收入合计...同比增减...17.04%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "净利润 722 亿元，同比增长 42.28%"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "收入和利润均实现了双位数增长"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2025_report",
+                             "quote":  "净利润(千元)...本年比上年增减...14.03%"
+                         }
+                     ],
+        "notes":  "两家公司营收均为双位数增长；宁德时代净利润增速42.28%高于美的14.03%。"
+    },
+    {
+        "qid":  "fin_a_019",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "连续三年以净利润的 50%实施现金分红"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "每10股派发现金分红69.57元"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "自 2019 年起公司连续四年推出回购计划"
+                         },
+                         {
+                             "doc_id":  "annual_midea_2024_report",
+                             "quote":  "营业总收入实现4,091亿元"
+                         }
+                     ],
+        "notes":  "A、B正确；C应为69.57元非38元，D未超过4500亿元。"
+    },
+    {
+        "qid":  "fin_a_020",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "营业收入达到人民币10,502亿元"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "营业收入合计423,701,834"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "经营活动产生的现金流量净额1,332亿元"
+                         },
+                         {
+                             "doc_id":  "annual_chinamobile_2025_report",
+                             "quote":  "占营业收入比重为2.8%"
+                         },
+                         {
+                             "doc_id":  "annual_catl_2025_report",
+                             "quote":  "境外收入占本期营业收入30.60%"
+                         }
+                     ],
+        "notes":  "A、B正确；C为2.8%非3.9%，D为30.60%。"
+    },
+    {
+        "qid":  "ins_a_001",
+        "answer":  "B",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "领取日前身故按保单账户价值给付"
+                         },
+                         {
+                             "doc_id":  "2",
+                             "quote":  "身故保险金额为下列两者的较大值"
+                         },
+                         {
+                             "doc_id":  "15",
+                             "quote":  "所交保险费减去累计已给付养老年金"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "余额与现金价值的较大者给付"
+                         }
+                     ],
+        "notes":  "计算为智盈90万、增益宝144万、鑫享80万、富鸿85万，排序对应B。"
+    },
+    {
+        "qid":  "ins_a_002",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "累计所交保险费；保单账户累计收益的75%"
+                         },
+                         {
+                             "doc_id":  "2",
+                             "quote":  "第六年及以后退保费用比例0%"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "退还本合同的现金价值"
+                         }
+                     ],
+        "notes":  "智盈金生=10+2×75%=11.5万；增益宝=12万；富鸿金生=9万。"
+    },
+    {
+        "qid":  "ins_a_003",
+        "answer":  "无正确选项",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "3",
+                             "quote":  "扣除已从其他途径获得的医疗费用补偿"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "最高赔付金额不超过...扣除其所获补偿后的余额"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "最高给付金额不超过...扣除其所获医疗费用补偿后的余额"
+                         }
+                     ],
+        "notes":  "医保已报3万，剩余可补偿损失为5万；费用补偿型医疗险合计不应超过该余额。题干已给众安免赔0和形态学复发，D理由不成立；A/B/C合计13.5万超额。"
+    },
+    {
+        "qid":  "ins_a_004",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "4",
+                             "quote":  "因意外伤害发生上述情形的，无等待期"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "58、双目失明*"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "等待期内被保险人确诊疾病，不承担保险责任"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "等待期内确诊疾病，不承担任何给付保险金责任"
+                         }
+                     ],
+        "notes":  "A为等待期内意外导致符合重疾，条款明确无等待期；C、D为非意外且在等待期内。"
+    },
+    {
+        "qid":  "ins_a_005",
+        "answer":  "ABCD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "4.被保险人酒后驾驶机动车；"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "不包括经输血、因职业关系、器官移植导致"
+                         },
+                         {
+                             "doc_id":  "7",
+                             "quote":  "不具有卫生主管部门要求的预防接种条件"
+                         },
+                         {
+                             "doc_id":  "13",
+                             "quote":  "（三）食品超过规定的保质期限；"
+                         }
+                     ],
+        "notes":  "四项均命中各自产品的责任免除范围。"
+    },
+    {
+        "qid":  "ins_a_006",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "5",
+                             "quote":  "1万元(同一保单中同时参保本计划的被保险人共享)"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "医疗费用补偿金额总和-约定的免赔额余额）×100％"
+                         }
+                     ],
+        "notes":  "e生保共享免赔：(1.2万+0.9万)-1万=1.1万；太保仅王某本人：1.2万-1万=0.2万。"
+    },
+    {
+        "qid":  "ins_a_007",
+        "answer":  "BC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "2",
+                             "quote":  "现金价值扣除借款及借款利息后余额的 80%"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "您可申请保单贷款功能"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "我们不接受保单贷款申请"
+                         }
+                     ],
+        "notes":  "国寿增益宝借款额度符合B；富鸿金生一般可贷，但个人养老金投保不接受贷款，故C对、D错；智盈金生未见保单贷款条款。"
+    },
+    {
+        "qid":  "ins_a_008",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "3",
+                             "quote":  "须在保险人指定医疗机构或药店购买"
+                         },
+                         {
+                             "doc_id":  "3",
+                             "quote":  "提交相应材料并通过处方审核"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "重大疾病保险金、身故保险金"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "处方必须经我们的药品处方审核"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "由我们与指定药店直接结算"
+                         }
+                     ],
+        "notes":  "A按指定购药渠道理解；B仅重疾/身故给付；C符合审核及直付；D无条款支持且表述绝对。"
+    },
+    {
+        "qid":  "ins_a_009",
+        "answer":  "C",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "7",
+                             "quote":  "接种本保险合同约定范围内的疫苗后"
+                         },
+                         {
+                             "doc_id":  "8",
+                             "quote":  "乘坐合法从事客运的营运交通工具"
+                         },
+                         {
+                             "doc_id":  "9",
+                             "quote":  "致使车上人员遭受人身伤亡"
+                         },
+                         {
+                             "doc_id":  "9",
+                             "quote":  "核定医疗费用的赔偿金额"
+                         }
+                     ],
+        "notes":  "A事故与接种无关；B非乘坐营运交通工具；C属已投保平安特种车车上人员责任险，可赔医疗费用；D题干未投保且无依据。"
+    },
+    {
+        "qid":  "ins_a_010",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "现金价值等于本合同累计所交保险费乘以如下比例"
+                         },
+                         {
+                             "doc_id":  "2",
+                             "quote":  "现金价值等于个人账户价值扣除相应的退保费用后的余额"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "保单年度末的现金价值会在保险合同上载明"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "保单年度末的现金价值会在保险单上载明"
+                         }
+                     ],
+        "notes":  "A、B给出计算方法或公式；C、D仅载明或可咨询，未给公式。"
+    },
+    {
+        "qid":  "ins_a_011",
+        "answer":  "BC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "3",
+                             "quote":  "除急性白血病首次复发外，由其他原因导致的治疗费用"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "因疾病或意外伤害经医院诊断必须住院治疗"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "一般医疗保险金(必选责任)"
+                         },
+                         {
+                             "doc_id":  "8",
+                             "quote":  "导致身故或伤残的"
+                         }
+                     ],
+        "notes":  "骨折住院属意外医疗，e生保和团体百万医疗可赔；白血病险限复发，营运交通意外险无医疗费用责任。"
+    },
+    {
+        "qid":  "ins_a_012",
+        "answer":  "A",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "2",
+                             "quote":  "在本合同效力中止期间，我们不承担保险责任"
+                         }
+                     ],
+        "notes":  "仅国寿增益宝明确宽限期满后效力中止且中止期间不担责。"
+    },
+    {
+        "qid":  "ins_a_013",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "可申请变更养老保险金开始领取年龄和养老保险金领取方式"
+                         },
+                         {
+                             "doc_id":  "15",
+                             "quote":  "养老年金开始领取日一经确定，在本合同的保险期间内不得变更"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "可申请变更养老保险金领取年龄、满期生存保险金可选方案及领取期间"
+                         }
+                     ],
+        "notes":  "智盈金生可在领取日前变更年龄和方式；鑫享添盈明确不得变更；富鸿金生可变更方式、年龄及领取期间。"
+    },
+    {
+        "qid":  "ins_a_014",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "medium",
+        "evidence":  [
+                         {
+                             "doc_id":  "4",
+                             "quote":  "57、双耳失聪*"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "给付基本重大疾病保险金"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "意外伤害经医院诊断必须住院治疗"
+                         },
+                         {
+                             "doc_id":  "7",
+                             "quote":  "接种本保险合同约定范围内的疫苗后"
+                         },
+                         {
+                             "doc_id":  "8",
+                             "quote":  "持有效客票乘坐合法从事客运的营运交通工具，在交通工具内遭受意外伤害导致身故或伤残"
+                         }
+                     ],
+        "notes":  "A属重疾给付；B在发生符合条款的住院或相关医疗费用时可赔；C要求接种约定疫苗后发生相关反应；D还要求事故发生在乘坐合法营运交通工具且在交通工具内，题干未给出该条件，故不选。"
+    },
+    {
+        "qid":  "ins_a_015",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "2 年内自杀，但被保险人自杀时为无民事行为能力人的除外"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "2 年内自杀，但被保险人自杀时为无民事行为能力人的除外"
+                         }
+                     ],
+        "notes":  "1、4明确自杀2年内免责且有例外；7、13未见该2年自杀免责例外。"
+    },
+    {
+        "qid":  "ins_a_016",
+        "answer":  "CD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "9",
+                             "quote":  "施救费用数额在被保险机动车损失赔偿金额以外另行计算，最高不超过保险金额。"
+                         },
+                         {
+                             "doc_id":  "10",
+                             "quote":  "施救费用数额在被保险机动车损失赔偿金额以外另行计算，最高不超过保险金额。"
+                         }
+                     ],
+        "notes":  "5、6未检索到施救费用；9、10明确规定上限。"
+    },
+    {
+        "qid":  "ins_a_017",
+        "answer":  "ABCD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "2",
+                             "quote":  "被保险人身故，本合同终止"
+                         },
+                         {
+                             "doc_id":  "3",
+                             "quote":  "急性白血病首次复发（释义七），并在医院接受治疗"
+                         },
+                         {
+                             "doc_id":  "8",
+                             "quote":  "乘坐合法从事客运的营运交通工具"
+                         },
+                         {
+                             "doc_id":  "11",
+                             "quote":  "由于下列原因造成的损失，保险人按照本保险合同的约定负责赔偿"
+                         }
+                     ],
+        "notes":  "四项事故均落入对应产品的保险责任范围，答案按字母升序拼接。"
+    },
+    {
+        "qid":  "ins_a_018",
+        "answer":  "BCD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "3",
+                             "quote":  "基本医疗保险统筹账户…不可用于抵扣免赔额"
+                         },
+                         {
+                             "doc_id":  "5",
+                             "quote":  "包括其基本医疗保险5个人账户支出的医疗费用"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "其他途径已获得的医疗费用补偿可用于抵扣免赔额"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "按照本合同基本保险金额给付基本重大疾病保险金"
+                         }
+                     ],
+        "notes":  "A与条款相反；B、C可抵扣；D为定额给付型重疾险，未设免赔额。"
+    },
+    {
+        "qid":  "ins_a_019",
+        "answer":  "ABCD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "1",
+                             "quote":  "退还您所支付的全部保险费"
+                         },
+                         {
+                             "doc_id":  "2",
+                             "quote":  "退还已收的全部保险费"
+                         },
+                         {
+                             "doc_id":  "4",
+                             "quote":  "退还您所支付的全部保险费"
+                         },
+                         {
+                             "doc_id":  "16",
+                             "quote":  "无息退还您所支付的全部保险费"
+                         }
+                     ],
+        "notes":  "四款产品条款均规定犹豫期内解除合同退还全部保险费。"
+    },
+    {
+        "qid":  "ins_a_020",
+        "answer":  "无正确选项",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "5",
+                             "quote":  "包含住院医疗保险金、指定门诊急诊医疗保险金"
+                         },
+                         {
+                             "doc_id":  "6",
+                             "quote":  "指定门诊医疗费用：门诊肾透析费"
+                         },
+                         {
+                             "doc_id":  "12",
+                             "quote":  "第六条列明火灾、爆炸、雷击、台风、暴风、暴雨等以及坠落及倒塌"
+                         },
+                         {
+                             "doc_id":  "12",
+                             "quote":  "除本保险合同第六条列明以外的其他自然灾害和意外事故不负责赔偿"
+                         }
+                     ],
+        "notes":  "普通摔伤门诊不属于e生保或太保百万医疗列明的住院、指定门诊或住院前后门诊责任；家财险第六条也未列明水管爆裂导致地板损坏为承保事故。四个选项均包含家财险赔8000元，因此无正确选项。"
+    },
+    {
+        "qid":  "reg_a_001",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "30个工作日内通过受益所有人信息查询管理系统提交差异报告"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "6个月内完成较高风险以上存量客户受益所有人识别核实工作"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "自2026年1月1日起施行"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "本办法自2026年1月20日起施行"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "不得与客户建立业务关系"
+                         }
+                     ],
+        "notes":  "A、C、D符合规定；B与不得建立业务关系、已建立则终止并报可疑交易报告相悖。"
+    },
+    {
+        "qid":  "reg_a_002",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_017_中华人民共和国反洗钱法",
+                             "quote":  "客户身份资料在业务关系结束后、客户交易信息在交易结束后，应当至少保存十年。"
+                         },
+                         {
+                             "doc_id":  "strict_v3_017_中华人民共和国反洗钱法",
+                             "quote":  "非依法律规定，不得向任何单位和个人提供。"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "应当在发现差异之日起30个工作日内通过受益所有人信息查询管理系统提交差异报告"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "自本办法施行之日起2年内完成全部存量客户的受益所有人识别核实工作"
+                         }
+                     ],
+        "notes":  "A、B、C均与条文一致；D错误，全部存量客户期限为2年，不是1年。"
+    },
+    {
+        "qid":  "reg_a_003",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "身份信息应当至少包括姓名、性别、国籍、出生年月以及可以用于身份识别的照片"
+                         },
+                         {
+                             "doc_id":  "strict_v3_015_中国人民银行令〔2025〕第3号（中国人民银行业务领域数据安全管理办法）",
+                             "quote":  "高敏感性数据项原则上不在终端设备和移动介质中存储"
+                         }
+                     ],
+        "notes":  "上市公司受益所有人身份信息包含照片；高敏感性数据项终端存储原则受限，确需存储应统一规范管理。"
+    },
+    {
+        "qid":  "reg_a_004",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_016_中国人民银行_国家金融监督管理总局令〔2025〕第2号（银行卡清算机构管理办法）",
+                             "quote":  "自职务变动之日起7日内"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "发现差异之日起30个工作日内"
+                         },
+                         {
+                             "doc_id":  "strict_v3_016_中国人民银行_国家金融监督管理总局令〔2025〕第2号（银行卡清算机构管理办法）",
+                             "quote":  "撤并分支机构的，应当至少提前30日"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "2年内完成全部存量客户"
+                         }
+                     ],
+        "notes":  "A、B、C与条文时限一致；D将全部存量客户误写为6个月。"
+    },
+    {
+        "qid":  "reg_a_005",
+        "answer":  "BC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_018_中国人民银行令〔2024〕第4号（非银行支付机构监督管理条例实施细则）",
+                             "quote":  "调任其他高级管理人员职位的"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "可以用于身份识别的照片"
+                         },
+                         {
+                             "doc_id":  "strict_v3_018_中国人民银行令〔2024〕第4号（非银行支付机构监督管理条例实施细则）",
+                             "quote":  "至少于调整施行前30个自然日"
+                         },
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "非重大差异，金融机构无需提交差异报告"
+                         }
+                     ],
+        "notes":  "A原文限调任其他高级管理人员职位；D非重大差异无需提交差异报告。"
+    },
+    {
+        "qid":  "reg_a_006",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_008_中国人民银行令〔2025〕第12号（金融机构客户受益所有人识别管理办法）",
+                             "quote":  "6个月内完成较高风险以上存量客户"
+                         },
+                         {
+                             "doc_id":  "csrc_0009_att1",
+                             "quote":  "未经董事会审议通过的定期报告不得披露"
+                         }
+                     ],
+        "notes":  "两项表述均与对应规定一致。"
+    },
+    {
+        "qid":  "reg_a_007",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "本办法自2026年1月1日起施行"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "令〔2022〕第1号发布）同时废止"
+                         },
+                         {
+                             "doc_id":  "strict_v3_017_中华人民共和国反洗钱法",
+                             "quote":  "客户身份资料在业务关系结束后"
+                         },
+                         {
+                             "doc_id":  "strict_v3_017_中华人民共和国反洗钱法",
+                             "quote":  "应当至少保存十年"
+                         },
+                         {
+                             "doc_id":  "strict_v3_017_中华人民共和国反洗钱法",
+                             "quote":  "不得依托其开展客户尽职调查"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "贷款金额为人民币1万元以上"
+                         }
+                     ],
+        "notes":  "A、C、D符合规定；B应为至少保存十年而非五年。"
+    },
+    {
+        "qid":  "reg_a_008",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_016_中国人民银行_国家金融监督管理总局令〔2025〕第2号（银行卡清算机构管理办法）",
+                             "quote":  "自职务变动之日起7日内"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "终止已建立的业务关系，并提交可疑交易报告"
+                         }
+                     ],
+        "notes":  "A与董事、高管离任7日报告规定一致；B遗漏可疑交易报告，C应为提前30日，D门槛表述不完整。"
+    },
+    {
+        "qid":  "reg_a_009",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_015_中国人民银行令〔2025〕第3号（中国人民银行业务领域数据安全管理办法）",
+                             "quote":  "每年1月15日前"
+                         },
+                         {
+                             "doc_id":  "strict_v3_015_中国人民银行令〔2025〕第3号（中国人民银行业务领域数据安全管理办法）",
+                             "quote":  "经中国人民银行报国家数据安全工作协调机制开展风险评估"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "客户身份资料自业务关系结束后至少保存10年"
+                         },
+                         {
+                             "doc_id":  "strict_v3_015_中国人民银行令〔2025〕第3号（中国人民银行业务领域数据安全管理办法）",
+                             "quote":  "应当对其从轻或者减轻行政处罚"
+                         }
+                     ],
+        "notes":  "A、B、D有明文依据；C与至少保存10年相悖。"
+    },
+    {
+        "qid":  "reg_a_010",
+        "answer":  "B",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "strict_v3_018_中国人民银行令〔2024〕第4号（非银行支付机构监督管理条例实施细则）",
+                             "quote":  "变更完成后10日内向住所所在地中国人民银行的分支机构报告"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "终止已建立的业务关系，并提交可疑交易报告"
+                         }
+                     ],
+        "notes":  "前半句正确；后半句应提交可疑交易报告，不是大额交易报告。"
+    },
+    {
+        "qid":  "reg_a_011",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0038_att1",
+                             "quote":  "未经董事会审议通过的年度报告不得披露"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "不得与空壳银行建立代理行或者类似业务关系"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "保险公司应当核实申请人身份"
+                         },
+                         {
+                             "doc_id":  "strict_v3_009_中国人民银行_国家金融监督管理总局_中国证券监督管理委员会令〔2025〕第11号（金融机构客户尽职调查和客户身份资料及交易记录保存管理办法）",
+                             "quote":  "保存至反洗钱调查工作结束"
+                         }
+                     ],
+        "notes":  "A、C、D符合规定；B错误，空壳银行代理行关系被禁止。"
+    },
+    {
+        "qid":  "reg_a_012",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "章程及与治理相关的文件，应当符合本准则的要求"
+                         },
+                         {
+                             "doc_id":  "csrc_0038_att1",
+                             "quote":  "应当披露导致退市风险警示的原因"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "具备条件而不进行现金分红的，应当充分披露原因"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "股东会召开前披露董事候选人的详细资料"
+                         }
+                     ],
+        "notes":  "A、B、D有明确依据；C与现金分红披露原因要求不符。"
+    },
+    {
+        "qid":  "reg_a_013",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "上市公司应当在股东会召开前披露董事候选人的详细资料"
+                         },
+                         {
+                             "doc_id":  "csrc_0037_att1",
+                             "quote":  "半年度报告内容应当经上市公司董事会审议通过"
+                         }
+                     ],
+        "notes":  "两项表述均有对应规定支持。"
+    },
+    {
+        "qid":  "reg_a_014",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0035_att1",
+                             "quote":  "审议批准董事会的报告"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "上市公司应当在股东会召开前披露董事候选人的详细资料"
+                         },
+                         {
+                             "doc_id":  "csrc_0035_att1",
+                             "quote":  "审议批准本章程第四十七条规定的担保事项"
+                         },
+                         {
+                             "doc_id":  "csrc_0035_att1",
+                             "quote":  "审议批准变更募集资金用途事项"
+                         }
+                     ],
+        "notes":  "A/B/D有明文依据；C与章程指引相反。"
+    },
+    {
+        "qid":  "reg_a_015",
+        "answer":  "C",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0009_att1",
+                             "quote":  "定期报告包括年度报告、中期报告"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "具备条件而不进行现金分红的，应当充分披露原因"
+                         }
+                     ],
+        "notes":  "A、B、D与定期报告范围、责任或审计要求不符，C准确。"
+    },
+    {
+        "qid":  "reg_a_016",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "股东会召开前披露董事候选人的详细资料"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "不进行现金分红的，应当充分披露原因"
+                         },
+                         {
+                             "doc_id":  "csrc_0271",
+                             "quote":  "未勤勉尽责，所出具的审计报告有虚假记载"
+                         },
+                         {
+                             "doc_id":  "csrc_0271",
+                             "quote":  "对林雷给予警告，并处以40万元罚款"
+                         }
+                     ],
+        "notes":  "A、B符合治理规范；D符合处罚案例。C的“名义业务收入”表述无依据。"
+    },
+    {
+        "qid":  "reg_a_017",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "上市公司章程及与治理相关的文件，应当符合本准则的要求"
+                         },
+                         {
+                             "doc_id":  "csrc_0023_att1",
+                             "quote":  "在股东会召开前披露董事候选人的详细资料"
+                         },
+                         {
+                             "doc_id":  "csrc_0262",
+                             "quote":  "违法行为未超过处罚时效"
+                         }
+                     ],
+        "notes":  "A、B有明确依据；C为当事人申辩且被认定未超时效；D无对应强制规定。"
+    },
+    {
+        "qid":  "reg_a_018",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0009_att1",
+                             "quote":  "未经董事会审议通过的定期报告不得披露"
+                         },
+                         {
+                             "doc_id":  "csrc_0027_att1",
+                             "quote":  "按以下原则给予相应扣分"
+                         }
+                     ],
+        "notes":  "两项表述均与对应监管文件一致。"
+    },
+    {
+        "qid":  "reg_a_019",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0027_att1",
+                             "quote":  "本规定自2025年8月22日起施行"
+                         },
+                         {
+                             "doc_id":  "csrc_0027_att1",
+                             "quote":  "实施行政处罚...给予相应扣分"
+                         },
+                         {
+                             "doc_id":  "csrc_0377",
+                             "quote":  "重大资产重组文件应披露...关联交易事项"
+                         },
+                         {
+                             "doc_id":  "csrc_0377",
+                             "quote":  "朱要文是...直接负责的主管人员"
+                         }
+                     ],
+        "notes":  "A、B、D正确；C与分类评价扣分规定相反。"
+    },
+    {
+        "qid":  "reg_a_020",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "csrc_0037_att1",
+                             "quote":  "半年度报告内容应当经上市公司董事会审议通过"
+                         },
+                         {
+                             "doc_id":  "csrc_0037_att1",
+                             "quote":  "未经董事会审议通过的半年度报告不得披露"
+                         },
+                         {
+                             "doc_id":  "csrc_0027_att1",
+                             "quote":  "本规定自2025年8月22日起施行"
+                         }
+                     ],
+        "notes":  "A、B、D有直接条文依据；C将施行误写为停止施行。"
+    },
+    {
+        "qid":  "res_a_001",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "持续提升至 2022 年的 56%"
+                         },
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "2005-2018年实现复合增速9.9%"
+                         },
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "2025年金融信创市场规模预计接近2500亿元"
+                         },
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "公司营收微降 8.47%"
+                         }
+                     ],
+        "notes":  "A、B、C均有原文支持；D原文为营收微降。"
+    },
+    {
+        "qid":  "res_a_002",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text11",
+                             "quote":  "预计2030年将达到900亿美元"
+                         },
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "近20年的复合增速达到12%"
+                         },
+                         {
+                             "doc_id":  "pack2_text11",
+                             "quote":  "2029年中国ICT市场规模接近8894.3亿美元"
+                         }
+                     ],
+        "notes":  "A、B、C均有指定报告直接依据；D未在两份指定报告中找到依据。"
+    },
+    {
+        "qid":  "res_a_003",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "近 20 年的复合增速达到 12%"
+                         },
+                         {
+                             "doc_id":  "pack2_text19",
+                             "quote":  "新兴行业超高频RFID标签出货量增速领跑"
+                         }
+                     ],
+        "notes":  "韩国银保渠道复合增速为12%，低于新兴赛道RFID标签出货量CAGR。"
+    },
+    {
+        "qid":  "res_a_004",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "芯片定制服务和半导体 IP 授权服务"
+                         },
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "2030 年数据中心半导体加速市场规模将达 4930 亿美元"
+                         },
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "支撑了韩国人身险保费的快速增长"
+                         },
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "中国大陆第一，全球第八"
+                         }
+                     ],
+        "notes":  "A、B与文档一致；C将“保费增长”误写为“管理体系”，D应为中国大陆第一、全球第八。"
+    },
+    {
+        "qid":  "res_a_005",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "累计同比高出商品零售1.7pcts"
+                         },
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "韩国银保渠道保费贡献超过 50%"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "2022年增速降至5%"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "剪刀差由正转负"
+                         }
+                     ],
+        "notes":  "A、B、C均有原文支持；D与原文方向相反。"
+    },
+    {
+        "qid":  "res_a_006",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text10",
+                             "quote":  "除客户资金杠杆从 1.56 倍稳步提升至4.09 倍"
+                         },
+                         {
+                             "doc_id":  "pack2_text10",
+                             "quote":  "自有资产净利率则由 4.3%降低至1.8%"
+                         }
+                     ],
+        "notes":  "文档表述为“除客户资金杠杆”，数值与题干一致。"
+    },
+    {
+        "qid":  "res_a_007",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "超过 1000 条内置检测规则"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "形成 3384 条解析规则实现自动解析"
+                         },
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "金融信创市场规模预计接近2500亿元"
+                         },
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "净利润亏损1139.39万元"
+                         }
+                     ],
+        "notes":  "A、B、C与原文一致；D将亏损表述为盈利且主体不符。"
+    },
+    {
+        "qid":  "res_a_008",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "提供了超过 1000 条内置检测规则"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "属性标准超 1200 项，对象标准 87 项"
+                         },
+                         {
+                             "doc_id":  "pack2_text11",
+                             "quote":  "预计2030年将达到 900 亿美元"
+                         }
+                     ],
+        "notes":  "A与原文一致；B数量级错误，C币种错误，D混淆属性标准与对象标准。"
+    },
+    {
+        "qid":  "res_a_009",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "韩国银保渠道保费贡献超过 50%"
+                         },
+                         {
+                             "doc_id":  "pack2_text01",
+                             "quote":  "从10%快速提升至 50%"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "超过 1000 条内置检测规则"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "3384 条解析规则实现自动解析"
+                         }
+                     ],
+        "notes":  "A、B、C均有原文支持；D将“自动解析”误写为“手动解析”。"
+    },
+    {
+        "qid":  "res_a_010",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text08",
+                             "quote":  "上周新成立份额91.1亿份，主动型新发56.3亿份"
+                         }
+                     ],
+        "notes":  "文档表述与题干一致，判断为正确。"
+    },
+    {
+        "qid":  "res_a_011",
+        "answer":  "BC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "超过 1000 条内置检测规则"
+                         },
+                         {
+                             "doc_id":  "pack2_text10",
+                             "quote":  "自有资产净利率则由 4.3%降低至1.8%"
+                         },
+                         {
+                             "doc_id":  "pack2_text10",
+                             "quote":  "行业除客户资金杠杆从 1.56 倍"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "3384 条解析规则实现自动解析"
+                         }
+                     ],
+        "notes":  "A应为除客户资金杠杆；D为自动解析非手动解析。"
+    },
+    {
+        "qid":  "res_a_012",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "依托自主半导体 IP，为客户提供平台化"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "提供了超过 1000 条内置检测规则"
+                         },
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "市场规模将达 4930 亿美元"
+                         },
+                         {
+                             "doc_id":  "pack2_text02",
+                             "quote":  "3384 条解析规则实现自动解析"
+                         }
+                     ],
+        "notes":  "A/B/C符合原文；D原文为自动解析，非手动解析。"
+    },
+    {
+        "qid":  "res_a_013",
+        "answer":  "B",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text13",
+                             "quote":  "2025年我国宠物医疗行业规模估计为395亿元"
+                         },
+                         {
+                             "doc_id":  "pack2_text13",
+                             "quote":  "2024年美国宠物医疗市场规模为人民币2786亿元"
+                         }
+                     ],
+        "notes":  "2786亿元、30.2%对应2024年美国，不是2025年我国。"
+    },
+    {
+        "qid":  "res_a_014",
+        "answer":  "ABC",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "服务零售增速持续领跑商品零售"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "2022年增速降至5%"
+                         },
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "主要客户包括芯片设计公司、IDM、系统厂商"
+                         }
+                     ],
+        "notes":  "A、B、C均有原文支持；D币种应为美元而非欧元。"
+    },
+    {
+        "qid":  "res_a_015",
+        "answer":  "A",
+        "answer_format":  "mcq",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text14",
+                             "quote":  "A股5家上市险企共计实现归母净利润4252.91亿元"
+                         }
+                     ],
+        "notes":  "A与报告一致；B多一位数，C/D与原文趋势相反。"
+    },
+    {
+        "qid":  "res_a_016",
+        "answer":  "ACD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "累计同比高出商品零售1.7pcts"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "2023-2025年从6.33%降至4.99%"
+                         },
+                         {
+                             "doc_id":  "pack2_text20",
+                             "quote":  "手续费及佣金净收入增速止跌回升"
+                         },
+                         {
+                             "doc_id":  "pack2_text20",
+                             "quote":  "上市险企四季度单季利润却普遍承压"
+                         }
+                     ],
+        "notes":  "A、C、D有原文数据支持；B与“止跌回升”相反。"
+    },
+    {
+        "qid":  "res_a_017",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "2025年金融信创市场规模预计接近2500亿元"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "企业与居民高储蓄并存，服务消费占比仍处相对低位"
+                         },
+                         {
+                             "doc_id":  "pack2_text03",
+                             "quote":  "2023-2025年从6.33%降至4.99%"
+                         },
+                         {
+                             "doc_id":  "pack2_text17",
+                             "quote":  "宇信科技…归母净利润13.69%的增长"
+                         }
+                     ],
+        "notes":  "A、B、D均有原文支持；C把2025年净利润增长主体误写为天阳科技，原文对应宇信科技。"
+    },
+    {
+        "qid":  "res_a_018",
+        "answer":  "A",
+        "answer_format":  "tf",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text07",
+                             "quote":  "新能源渗透率回升至51.5%"
+                         },
+                         {
+                             "doc_id":  "pack2_text04",
+                             "quote":  "宁德时代市占率回升至25%"
+                         }
+                     ],
+        "notes":  "两项表述均可在对应报告中找到依据。"
+    },
+    {
+        "qid":  "res_a_019",
+        "answer":  "AB",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text04",
+                             "quote":  "26年权益资源利润对应PE估值10-15x"
+                         },
+                         {
+                             "doc_id":  "pack2_text06",
+                             "quote":  "油价下滑，带动化工品价格整体回落"
+                         },
+                         {
+                             "doc_id":  "pack2_text04",
+                             "quote":  "26年1-3月国内累计销量296万辆，同比-3.6%"
+                         },
+                         {
+                             "doc_id":  "pack2_text06",
+                             "quote":  "伊朗有条件开放霍尔木兹海峡"
+                         }
+                     ],
+        "notes":  "A、B正确；C应为同比下降，D应为有条件开放。"
+    },
+    {
+        "qid":  "res_a_020",
+        "answer":  "ABD",
+        "answer_format":  "multi",
+        "confidence":  "high",
+        "evidence":  [
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "2024年芯原IP授权业务市场占有率位列中国大陆第一"
+                         },
+                         {
+                             "doc_id":  "pack2_text04",
+                             "quote":  "权益资源利润对应PE估值5-10x"
+                         },
+                         {
+                             "doc_id":  "pack2_text04",
+                             "quote":  "国内累计销量296万辆，同比-3.6%"
+                         },
+                         {
+                             "doc_id":  "pack2_text09",
+                             "quote":  "FY2027，仅AI芯片一项就能带来超过1000亿美元"
+                         }
+                     ],
+        "notes":  "A、B、D有原文支撑；C为博通预测，非芯原股份预测。"
+    }
+]
