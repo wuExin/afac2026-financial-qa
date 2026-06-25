@@ -38,6 +38,13 @@ def load_pdf_template() -> str:
     return _PDF_TEMPLATE_PATH.read_text(encoding="utf-8")
 
 
+_SEARCH_JS_PATH = Path(__file__).with_name("search.js")
+
+
+def load_search_js() -> str:
+    return _SEARCH_JS_PATH.read_text(encoding="utf-8")
+
+
 def build_pdf_html(pdf_b64: str, template: str | None = None) -> str:
     tpl = template if template is not None else load_pdf_template()
     return tpl.replace("{{PDF_B64}}", pdf_b64)

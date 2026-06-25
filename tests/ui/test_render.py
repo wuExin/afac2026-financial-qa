@@ -7,6 +7,7 @@ from ui.render import (
     is_pdf_too_large,
     load_compare_template,
     load_pdf_template,
+    load_search_js,
     md_to_html,
     pdf_to_base64,
 )
@@ -61,3 +62,10 @@ def test_build_pdf_html_substitutes():
     out = build_pdf_html("QUJD", template=tpl)
     assert out == "data=QUJD"
     assert "{{PDF_B64}}" not in out
+
+
+def test_load_search_js_nonempty_with_markers():
+    js = load_search_js()
+    assert "afac-search-engine" in js
+    assert "searchcontentready" in js
+    assert "data-search-root" in js
