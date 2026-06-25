@@ -45,7 +45,10 @@ def render_md_only(data_root: Path, domain: str, entry: DocEntry) -> None:
     if not entry.has_md:
         st.warning("该文档缺少 markdown")
         return
-    st.markdown(_read_md(data_root, domain, entry.doc_id), unsafe_allow_html=True)
+    st.markdown(
+        md_to_html(_read_md(data_root, domain, entry.doc_id)),
+        unsafe_allow_html=True,
+    )
 
 
 def render_split(data_root: Path, domain: str, entry: DocEntry) -> None:
@@ -62,7 +65,7 @@ def render_split(data_root: Path, domain: str, entry: DocEntry) -> None:
         col_md, col_pdf = st.columns(2)
         with col_md:
             st.markdown(
-                _read_md(data_root, domain, entry.doc_id),
+                md_to_html(_read_md(data_root, domain, entry.doc_id)),
                 unsafe_allow_html=True,
             )
         with col_pdf:
