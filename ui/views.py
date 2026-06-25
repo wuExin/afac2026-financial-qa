@@ -7,6 +7,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from ui.data_index import DocEntry, md_path, pdf_path
+from ui.questions import Question
 from ui.render import (
     build_compare_html,
     build_pdf_html,
@@ -16,6 +17,19 @@ from ui.render import (
 )
 
 _COMPONENT_HEIGHT = 900
+
+
+def render_question_panel(q: Question) -> None:
+    """顶部题目区:题号/题型、题干、选项 A-D、正确答案、关联文档。"""
+    meta = f"`{q.qid}`" + (f" · {q.qtype}" if q.qtype else "")
+    st.markdown(meta)
+    st.markdown(f"#### {q.question}")
+    for key, text in q.options.items():
+        st.markdown(f"- **{key}.** {text}")
+    if q.answer:
+        st.success(f"正确答案:{q.answer}")
+    if q.doc_ids:
+        st.caption("关联文档:" + " · ".join(q.doc_ids))
 
 
 def _read_md(data_root: Path, domain: str, doc_id: str) -> str:
