@@ -93,6 +93,7 @@ def test_load_pdf_template_has_search_and_textlayer():
     assert "data-search-root" in tpl
     assert "renderTextLayer" in tpl
     assert "searchcontentready" in tpl
+    assert "PDF 加载失败" in tpl
 
 
 def test_load_compare_template_has_search_and_textlayer():
@@ -103,3 +104,4 @@ def test_load_compare_template_has_search_and_textlayer():
     assert 'data-search-label="PDF"' in tpl
     assert "renderTextLayer" in tpl
     assert "searchcontentready" in tpl
+    assert "PDF 加载失败" in tpl

@@ -83,6 +83,12 @@
     }
     updateBadge();
     document.dispatchEvent(new Event("searchcontentready"));
+  })
+  .catch((err) => {
+    const msg = document.createElement("div");
+    msg.style.cssText = "color:#b00;padding:12px;font:13px/1.4 sans-serif;";
+    msg.textContent = "PDF 加载失败:" + (err && err.message ? err.message : err);
+    pdfEl.appendChild(msg);
   });
 
   // 当前视口顶部所在的 PDF 页码(1-based)。无映射数据,按实际页面位置判定。
