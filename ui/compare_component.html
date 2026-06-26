@@ -3,15 +3,26 @@
 <head>
 <meta charset="utf-8" />
 <style>
-  html, body { margin: 0; height: 100%; }
-  #wrap { display: flex; height: 85vh; gap: 8px; }
+  html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
+  #wrap { flex: 1; min-height: 0; display: flex; gap: 8px; }
   #md, #pdf { flex: 1; overflow: auto; border: 1px solid #ddd; padding: 12px; box-sizing: border-box; }
   #md { background: #fff; }
   #pdf { position: relative; background: #f5f5f5; }
   #md img { max-width: 100%; }
   #md table { border-collapse: collapse; }
   #md td, #md th { border: 1px solid #ccc; padding: 4px; }
-  #pdf canvas { display: block; margin: 0 auto 8px; max-width: 100%; box-shadow: 0 0 3px rgba(0,0,0,.3); }
+  .page {
+    position: relative; margin: 0 auto 8px;
+    box-shadow: 0 0 3px rgba(0,0,0,.3); background: #fff;
+  }
+  .page canvas { display: block; }
+  .textLayer {
+    position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    overflow: hidden; line-height: 1;
+  }
+  .textLayer span {
+    position: absolute; white-space: pre; color: transparent; transform-origin: 0 0;
+  }
   #pagebadge {
     position: sticky; top: 0; float: right; z-index: 10;
     background: rgba(33,33,33,.82); color: #fff; font: 12px/1.4 sans-serif;
@@ -23,8 +34,8 @@
 </head>
 <body>
 <div id="wrap">
-  <div id="md">{{MD_HTML}}</div>
-  <div id="pdf"><div id="pagebadge">第 - / - 页</div></div>
+  <div id="md" data-search-root data-search-label="MD">{{MD_HTML}}</div>
+  <div id="pdf" data-search-root data-search-label="PDF"><div id="pagebadge">第 - / - 页</div></div>
 </div>
 <script>
   const PDF_B64 = "{{PDF_B64}}";
@@ -42,7 +53,7 @@
   const pdfEl = document.getElementById("pdf");
   const badgeEl = document.getElementById("pagebadge");
 
-  // canvas.offsetTop for each rendered page, in PDF pane scroll coordinates.
+  // pageDiv.offsetTop for each rendered page, in PDF pane scroll coordinates.
   const pageTops = [];
   let numPages = 0;
 
@@ -51,17 +62,30 @@
     for (let n = 1; n <= numPages; n++) {
       const page = await pdf.getPage(n);
       const viewport = page.getViewport({ scale: 1.4 });
+      const pageDiv = document.createElement("div");
+      pageDiv.className = "page";
+      pageDiv.style.width = viewport.width + "px";
+      pageDiv.style.height = viewport.height + "px";
       const canvas = document.createElement("canvas");
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      pdfEl.appendChild(canvas);
+      pageDiv.appendChild(canvas);
+      pdfEl.appendChild(pageDiv);
       await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
-      pageTops.push(canvas.offsetTop);
+      const textContent = await page.getTextContent();
+      const textLayerDiv = document.createElement("div");
+      textLayerDiv.className = "textLayer";
+      pageDiv.appendChild(textLayerDiv);
+      await pdfjsLib.renderTextLayer({
+        textContent, container: textLayerDiv, viewport, textDivs: [],
+      }).promise;
+      pageTops.push(pageDiv.offsetTop);
     }
     updateBadge();
+    document.dispatchEvent(new Event("searchcontentready"));
   });
 
-  // 当前视口顶部所在的 PDF 页码(1-based)。无映射数据,按实际 canvas 位置判定。
+  // 当前视口顶部所在的 PDF 页码(1-based)。无映射数据,按实际页面位置判定。
   function currentPage() {
     if (!pageTops.length) return 0;
     const top = pdfEl.scrollTop + pdfEl.clientHeight * 0.25; // 视口偏上一点作判定点
@@ -78,9 +102,9 @@
     badgeEl.textContent = "第 " + currentPage() + " / " + numPages + " 页";
   }
 
-  // 两栏各自独立滚动,不做跟随同步(比例同步定位不准,已移除)。
-  // 仅在 PDF 栏滚动时刷新页码徽标。
+  // 两栏各自独立滚动,不做跟随同步。仅在 PDF 栏滚动时刷新页码徽标。
   pdfEl.addEventListener("scroll", updateBadge);
 </script>
+<script>{{SEARCH_JS}}</script>
 </body>
 </html>

@@ -93,3 +93,13 @@ def test_load_pdf_template_has_search_and_textlayer():
     assert "data-search-root" in tpl
     assert "renderTextLayer" in tpl
     assert "searchcontentready" in tpl
+
+
+def test_load_compare_template_has_search_and_textlayer():
+    tpl = load_compare_template()
+    assert "{{SEARCH_JS}}" in tpl
+    assert tpl.count("data-search-root") == 2
+    assert 'data-search-label="MD"' in tpl
+    assert 'data-search-label="PDF"' in tpl
+    assert "renderTextLayer" in tpl
+    assert "searchcontentready" in tpl
