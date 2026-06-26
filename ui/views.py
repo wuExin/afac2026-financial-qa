@@ -10,6 +10,7 @@ from ui.data_index import DocEntry, md_path, pdf_path
 from ui.questions import Question
 from ui.render import (
     build_compare_html,
+    build_md_html,
     build_pdf_html,
     is_pdf_too_large,
     md_to_html,
@@ -58,10 +59,8 @@ def render_md_only(data_root: Path, domain: str, entry: DocEntry) -> None:
     if not entry.has_md:
         st.warning("该文档缺少 markdown")
         return
-    st.markdown(
-        md_to_html(_read_md(data_root, domain, entry.doc_id)),
-        unsafe_allow_html=True,
-    )
+    md_html = md_to_html(_read_md(data_root, domain, entry.doc_id))
+    components.html(build_md_html(md_html), height=_COMPONENT_HEIGHT, scrolling=False)
 
 
 def render_split(data_root: Path, domain: str, entry: DocEntry) -> None:
